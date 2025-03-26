@@ -21,20 +21,28 @@ function Login() {
       const res = await axios.post("http://127.0.0.1:8000/login", formData, {
         headers: { "Content-Type": "application/json" }
       });
-      const user = res.data;
+  
+      const { access_token, user } = res.data;
+  
+      // ✅ Salvăm token și user în localStorage
+      localStorage.setItem("token", access_token);
+      localStorage.setItem("user", JSON.stringify(user));
+  
       alert("Autentificare reușită!");
-
-      // redirecționare în funcție de rol
+  
+      // ✅ Redirecționăm în funcție de rol
       if (user.role === "alergator") {
         navigate("/dashboard-alergator");
       } else {
         navigate("/dashboard-fotograf");
       }
+  
     } catch (err) {
       alert("Email sau parolă greșită!");
       console.error(err);
     }
   };
+  
 
   return (
     <div className="register-page">

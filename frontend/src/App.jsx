@@ -3,14 +3,31 @@ import { Routes, Route } from "react-router-dom";
 import Register from "./components/Register";
 import DashboardAlergator from "./pages/DashboardAlergator";
 import DashboardFotograf from "./pages/DashboardFotograf";
+import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/dashboard-alergator" element={<DashboardAlergator />} />
-      <Route path="/dashboard-fotograf" element={<DashboardFotograf />} />
       <Route path="/login" element={<Login />} />
+
+      {/* 🔒 Protejăm dashboard-urile */}
+      <Route
+        path="/dashboard-alergator"
+        element={
+          <RequireAuth>
+            <DashboardAlergator />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard-fotograf"
+        element={
+          <RequireAuth>
+            <DashboardFotograf />
+          </RequireAuth>
+        }
+      />
     </Routes>
   );
 }
