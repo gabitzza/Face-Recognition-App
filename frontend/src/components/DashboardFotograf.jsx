@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 function DashboardFotograf() {
   const [file, setFile] = useState(null);
   const [contestId, setContestId] = useState(1); // sau dintr-un drop-down
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (userData) {
+      setUserName(userData.full_name);
+    }
+  }, []);
 
   const handleUpload = async () => {
     const token = localStorage.getItem("token");
@@ -32,11 +40,11 @@ function DashboardFotograf() {
     }
   };
 
-  return (
-    <div>
-      <h2>Upload Poze</h2>
+   return (
+    <div style={{ padding: "2rem" }}>
+      <h2>📸 Bun venit, {userName || "Fotograf"}!</h2>
+      <p>Aici vei putea selecta concursuri și încărca poze.</p>
 
-      {/* Drop-down pentru concursuri (mock) */}
       <select onChange={(e) => setContestId(e.target.value)} value={contestId}>
         <option value={1}>Brașov Marathon</option>
         <option value={2}>Festivalul Sporturilor</option>
