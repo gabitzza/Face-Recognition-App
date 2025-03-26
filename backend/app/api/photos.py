@@ -1,17 +1,27 @@
+import os
+import shutil
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.models.user import User
-from app.models.photos import Photo  # modelul tău pentru poze
+from app.models.photos import Photo
 from datetime import datetime
-import shutil
-import os
-
 from .auth import get_current_user
 
 router = APIRouter()
 
-# Funcție DB
+# Calea absolută către folderul 'uploads' din backend/app
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+
+# Verificăm dacă calea este calculată corect
+print(f"Upload folder path: {UPLOAD_FOLDER}")
+
+# Creăm directorul dacă nu există
+if not os.path.exists(UPLOAD_FOLDER):
+    print("Folderul uploads nu există. Creăm folderul...")
+    os.makedirs(UPLOAD_FOLDER)
+
+# DB dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -19,29 +29,27 @@ def get_db():
     finally:
         db.close()
 
-UPLOAD_FOLDER = "uploads"
-
 @router.post("/upload-photo")
 def upload_photo(
     file: UploadFile = File(...),
-    contest_id: int = 1,  # pentru test, ideal primești din form
+    contest_id: int = 1,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     if current_user.role != "fotograf":
         raise HTTPException(status_code=403, detail="Doar fotografii pot încărca poze")
 
-    # Salvează fișierul în folder local (uploads/nume_fisier)
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-
+    # Verificăm din nou calea pentru fișier
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    print(f"Fișierul va fi salvat în: {file_path}")
+    
+    # Salvează fișierul în folderul uploads
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Salvează în DB
+    # Salvează informațiile în baza de date
     photo = Photo(
-        file_path=file_path,
+        image_path=f"uploads/{file.filename}",  # Calea relativă pentru a fi folosită în API
         contest_id=contest_id,
         photographer_id=current_user.id,
         uploaded_at=datetime.utcnow()

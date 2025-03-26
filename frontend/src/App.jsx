@@ -5,6 +5,7 @@ import DashboardAlergator from "./pages/DashboardAlergator";
 import DashboardFotograf from "./pages/DashboardFotograf";
 import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
+import GalerieFotograf from "./pages/GalerieFotograf";
 function App() {
   return (
     <Routes>
@@ -28,6 +29,7 @@ function App() {
           </RequireAuth>
         }
       />
+      <Route path="/galerie-fotograf" element={<GalerieFotograf />} />
     </Routes>
   );
 }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; 
 
 function DashboardFotograf() {
   const [file, setFile] = useState(null);
   const [contestId, setContestId] = useState(1); // sau dintr-un drop-down
   const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -15,32 +17,35 @@ function DashboardFotograf() {
 
   const handleUpload = async () => {
     const token = localStorage.getItem("token");
-
-    if (!file) {
-      alert("Alege o imagine!");
+  
+    if (!file || file.length === 0) {
+      alert("Alege cel puțin o imagine!");
       return;
     }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("contest_id", contestId); // dacă e primit ca field
-
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/upload-photo", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
-        }
-      });
-      alert("Poză încărcată cu succes!");
-      console.log(res.data);
-    } catch (err) {
-      alert("Eroare la upload.");
-      console.error(err);
+  
+    for (let i = 0; i < file.length; i++) {
+      const formData = new FormData();
+      formData.append("file", file[i]);
+      formData.append("contest_id", contestId);
+  
+      try {
+        const res = await axios.post("http://127.0.0.1:8000/upload-photo", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+          }
+        });
+        console.log(`✅ Poză ${file[i].name} încărcată cu succes!`, res.data);
+      } catch (err) {
+        console.error(`❌ Eroare la poza ${file[i].name}:`, err);
+      }
     }
+  
+    alert("Toate pozele au fost procesate!");
   };
+  
 
-   return (
+  return (
     <div style={{ padding: "2rem" }}>
       <h2>📸 Bun venit, {userName || "Fotograf"}!</h2>
       <p>Aici vei putea selecta concursuri și încărca poze.</p>
@@ -51,8 +56,14 @@ function DashboardFotograf() {
       </select>
 
       <br />
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+      <input
+        type="file"
+        multiple
+        onChange={(e) => setFile(e.target.files)}
+      />
+
       <button onClick={handleUpload}>Încarcă</button>
+      <button onClick={() => navigate("/galerie-fotograf")}>Vezi Galeria Mea</button>
     </div>
   );
 }
