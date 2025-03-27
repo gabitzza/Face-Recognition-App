@@ -36,7 +36,7 @@ function GalerieFotograf() {
                             <img
                                 src={`http://127.0.0.1:8000/uploads/${photo.image_path.replace("\\", "/")}`}
                                 alt={`Foto ${photo.id}`}
-                                width="150"
+                                style={{ width: "200px", borderRadius: "8px" }}
                             />
 
                             <p>ID Poză: {photo.id}</p>

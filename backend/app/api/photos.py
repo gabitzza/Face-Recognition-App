@@ -39,9 +39,11 @@ def upload_photo(
     if current_user.role != "fotograf":
         raise HTTPException(status_code=403, detail="Doar fotografii pot încărca poze")
 
-    # Verificăm din nou calea pentru fișier
+    # Definirea corectă a fișierului
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-    print(f"Fișierul va fi salvat în: {file_path}")
+    
+    # Afișează calea unde va fi salvat fișierul
+    print(f"Se încearcă salvarea fișierului în: {file_path}")
     
     # Salvează fișierul în folderul uploads
     with open(file_path, "wb") as buffer:

@@ -15,12 +15,7 @@ app = FastAPI()
 #  CORS Middleware – trebuie pus ÎNAINTE de rute
 app.add_middleware(
     CORSMiddleware,
-     allow_origins=[
-        "http://localhost:5176", 
-        "http://localhost:5173", 
-        "http://127.0.0.1:5173", 
-        "http://127.0.0.1:5176"
-    ],
+    allow_origins=["*"],  # Your frontend's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,7 +28,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth.router, tags=["Autentificare"])
 app.include_router(photos.router)
 app.include_router(gallery.router, tags=["Galerie"]) 
-app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "app", "uploads")), name="uploads")
+app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "uploads")), name="uploads")
 
 
 #  Middleware pentru logare requesturi
