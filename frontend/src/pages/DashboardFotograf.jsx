@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 function DashboardFotograf() {
   const [file, setFile] = useState(null);
   const [contestId, setContestId] = useState(1); // sau dintr-un drop-down
+  const [albumTitle, setAlbumTitle] = useState(""); // Titlul albumului
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
@@ -26,6 +27,9 @@ function DashboardFotograf() {
     for (let i = 0; i < file.length; i++) {
       const formData = new FormData();
       formData.append("file", file[i]);
+      formData.append("album_title", albumTitle);
+      formData.append("album_title", albumTitle);
+      console.log("albumTitle trimis:", albumTitle);
       formData.append("contest_id", contestId);
   
       try {
@@ -37,7 +41,11 @@ function DashboardFotograf() {
         });
         console.log(`✅ Poză ${file[i].name} încărcată cu succes!`, res.data);
       } catch (err) {
-        console.error(`❌ Eroare la poza ${file[i].name}:`, err);
+        if (err.response?.status === 409) {
+          alert(`❗ Poza ${file[i].name} a fost deja încărcată.`);
+        } else {
+          console.error(`❌ Eroare la poza ${file[i].name}:`, err);
+        }
       }
     }
   
@@ -55,6 +63,15 @@ function DashboardFotograf() {
         <option value={2}>Festivalul Sporturilor</option>
       </select>
 
+      <br />
+      <input
+        type="text"
+        placeholder="Titlul albumului"
+        onChange={(e) => setAlbumTitle(e.target.value)}
+        value={albumTitle}
+        required
+      />
+      <br />
       <br />
       <input
         type="file"

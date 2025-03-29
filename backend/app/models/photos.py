@@ -1,7 +1,10 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
+
 from app.core.database import Base
+
 
 class Photo(Base):
     __tablename__ = "photos"
@@ -13,6 +16,7 @@ class Photo(Base):
     photographer_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     matched_runner_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+    photo_hash = Column(String, index=True, nullable=False)
 
     # Relații (doar dacă ai deja User model)
     photographer = relationship("User", back_populates="photos_taken", foreign_keys=[photographer_id])
