@@ -16,6 +16,9 @@ class Photo(Base):
     photographer_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     matched_runner_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"))
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Noul câmp pentru encoding
+    face_encoding = Column(Text, nullable=True)
     photo_hash = Column(String, index=True, nullable=False)
 
     # Relații (doar dacă ai deja User model)

@@ -10,8 +10,10 @@ from .auth import get_current_user
 from fastapi import Form
 from app.models.contests import Contest
 import hashlib
+from app.utils.face_encoder import encode_image, save_encoding
 import unicodedata
 import re
+import json
 
 router = APIRouter()
 
@@ -129,16 +131,29 @@ def upload_photo(
 
     # 6. Salvăm în baza de date
     print(f" Nume concurs='{contest.name}'")
+
+    encoding = encode_image(file_path)
+    if encoding:
+        save_encoding(file_path, encoding)
+        encoding_json = json.dumps(encoding)
+        print(f"[✅] Encoding salvat pentru {file.filename}")
+    else:
+        encoding_json = None
+        print(f"[⚠️] Nicio față detectată în {file.filename}")
+
     photo = Photo(
         image_path=f"{contest_name}/{final_album_title}/{file.filename}",
         contest_id=contest_id,
         photographer_id=current_user.id,
         uploaded_at=datetime.utcnow(),
-        photo_hash=file_hash  # 👈 Adăugat corect aici
+        photo_hash=file_hash, # 👈 Adăugat corect aici
+        face_encoding=encoding_json
     )
 
     db.add(photo)
     db.commit()
     db.refresh(photo)
+
+    
 
     return {"message": "Foto încărcată cu succes", "photo_id": photo.id}
