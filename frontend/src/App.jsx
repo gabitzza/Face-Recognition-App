@@ -6,6 +6,8 @@ import DashboardFotograf from "./pages/DashboardFotograf";
 import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
 import GalerieFotograf from "./pages/GalerieFotograf";
+import DashboardAdmin from "./pages/DashboardAdmin";
+
 function App() {
   return (
     <Routes>
@@ -30,6 +32,16 @@ function App() {
         }
       />
       <Route path="/galerie-fotograf" element={<GalerieFotograf />} />
+
+      <Route
+        path="/dashboard-admin"
+        element={
+          <RequireAuth>
+            <DashboardAdmin />
+          </RequireAuth>
+        }
+      />
+
     </Routes>
   );
 }

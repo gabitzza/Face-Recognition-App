@@ -2,7 +2,7 @@ import os
 import shutil
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.core.database import SessionLocal
+from app.core.database import get_db
 from app.models.user import User
 from app.models.photos import Photo
 from datetime import datetime
@@ -30,13 +30,6 @@ if not os.path.exists(UPLOAD_FOLDER):
     print("Folderul uploads nu există. Creăm folderul...")
     os.makedirs(UPLOAD_FOLDER)
 
-# DB dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 def calculate_file_hash(file_obj):
     hasher = hashlib.sha256()

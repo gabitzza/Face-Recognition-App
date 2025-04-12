@@ -7,6 +7,8 @@ from app.models import user, photos as photo_model, contests
 from app.core.database import Base, engine
 from app.api import gallery 
 from fastapi.staticfiles import StaticFiles
+from app.api import contest 
+from app.api import match
 import os
 
 app = FastAPI()
@@ -29,6 +31,8 @@ app.include_router(auth.router, tags=["Autentificare"])
 app.include_router(photos.router)
 app.include_router(gallery.router, tags=["Galerie"]) 
 app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "uploads")), name="uploads")
+app.include_router(match.router)
+app.include_router(contest.router)     
 
 
 #  Middleware pentru logare requesturi
