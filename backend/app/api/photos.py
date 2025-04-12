@@ -10,7 +10,7 @@ from .auth import get_current_user
 from fastapi import Form
 from app.models.contests import Contest
 import hashlib
-from app.utils.face_encoder import encode_image, save_encoding
+from app.utils.face_encoder import encode_all_faces
 import unicodedata
 import re
 import json
@@ -125,14 +125,14 @@ def upload_photo(
     # 6. Salvăm în baza de date
     print(f" Nume concurs='{contest.name}'")
 
-    encoding = encode_image(file_path)
-    if encoding:
-        save_encoding(file_path, encoding)
-        encoding_json = json.dumps(encoding)
-        print(f"[✅] Encoding salvat pentru {file.filename}")
+    encodings = encode_all_faces(file_path)
+    if encodings:
+        encoding_json = json.dumps(encodings)  # listă de encoduri
+        print(f"[✅] {len(encodings)} encodări salvate pentru {file.filename}")
     else:
         encoding_json = None
         print(f"[⚠️] Nicio față detectată în {file.filename}")
+
 
     photo = Photo(
         image_path=f"{contest_name}/{final_album_title}/{file.filename}",
