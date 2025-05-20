@@ -217,3 +217,25 @@ body {
   justify-content: center;
   margin-top: 1rem;
 }
+
+.lightbox-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.lightbox-actions button {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #e11d48;
+  color: white;
+  cursor: pointer;
+}
+
+.lightbox-actions button:hover {
+  background-color: #be123c;
+}
+

@@ -114,3 +114,28 @@ def get_favorite_photos(
 
     favorites = user.favorite_photos  # relație definită în User model
     return {"favorites": [photo.image_path for photo in favorites]}
+
+
+@router.delete("/remove-from-favorites")
+def remove_from_favorites(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    image_path = data.get("image_path")
+    if not image_path:
+        raise HTTPException(status_code=400, detail="Path invalid")
+
+    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
+    if not photo:
+        raise HTTPException(status_code=404, detail="Poza nu există")
+
+    user = db.query(User).filter(User.id == current_user.id).first()
+
+    if user in photo.favorited_by:
+        photo.favorited_by.remove(user)
+        db.commit()
+        return {"message": "Poza a fost eliminată din favorite"}
+
+    raise HTTPException(status_code=404, detail="Poza nu era în favorite")
+

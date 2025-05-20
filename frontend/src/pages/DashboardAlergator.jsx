@@ -121,7 +121,13 @@ const DashboardAlergator = () => {
       alert("Trebuie să fii logat.");
       return;
     }
-
+  
+    // ✅ verificare locală dacă poza e deja în lista de favorite
+    if (favoritePhotos.includes(imagePath)) {
+      alert("✅ Această poză este deja la favorite.");
+      return;
+    }
+  
     try {
       await axios.post("http://127.0.0.1:8000/add-to-favorites", {
         image_path: imagePath
@@ -131,6 +137,7 @@ const DashboardAlergator = () => {
         }
       });
       alert("⭐ Adăugat la favorite!");
+      setFavoritePhotos(prev => [...prev, imagePath]); // opțional: actualizează local
     } catch (err) {
       console.error("❌ Eroare la favorite:", err);
       if (err.response?.status === 409) {
@@ -140,6 +147,32 @@ const DashboardAlergator = () => {
       }
     }
   };
+  
+
+  const handleRemoveFromFavorites = async (imagePath) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Trebuie să fii logat.");
+      return;
+    }
+
+    try {
+      await axios.delete("http://127.0.0.1:8000/remove-from-favorites", {
+        data: { image_path: imagePath },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      alert("💔 Eliminat din favorite!");
+      setFavoritePhotos(prev => prev.filter(path => path !== imagePath));
+      setFavoriteOpen(false); // ← închide lightbox-ul după ștergere
+    } catch (err) {
+      console.error("❌ Eroare la ștergere:", err);
+      alert("Nu s-a putut elimina poza.");
+    }
+  };
+
+
 
 
 
@@ -304,7 +337,20 @@ const DashboardAlergator = () => {
           slides={galleryPhotos.map((imgPath) => ({
             src: `http://127.0.0.1:8000/uploads/${imgPath}`,
           }))}
+          render={{
+            slideFooter: () => (
+              <div className="lightbox-actions">
+                <button
+                  className="add-to-favorite"
+                  onClick={() => handleAddToFavorites(galleryPhotos[galleryIndex])}
+                >
+                  🤍 Adaugă la favorite
+                </button>
+              </div>
+            )
+          }}
         />
+
 
         <Lightbox
           open={favoriteOpen}
@@ -313,8 +359,19 @@ const DashboardAlergator = () => {
           slides={favoritePhotos.map((imgPath) => ({
             src: `http://127.0.0.1:8000/uploads/${imgPath}`,
           }))}
+          render={{
+            slideFooter: () => (
+              <div className="lightbox-actions">
+                <button
+                  className="remove-from-favorite"
+                  onClick={() => handleRemoveFromFavorites(favoritePhotos[favoriteIndex])}
+                >
+                  💔 Scoate din favorite
+                </button>
+              </div>
+            )
+          }}
         />
-
 
       </main>
     </div>
