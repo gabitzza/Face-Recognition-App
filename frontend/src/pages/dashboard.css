@@ -184,3 +184,36 @@ body {
   height: 100%;
   cursor: pointer;
 }
+
+.save-to-gallery, .add-to-favorite {
+  position: absolute;
+  top: 10px;          /* Poziție verticală */
+  right: 70px;        /* Poziție orizontală */
+  background: none;   /* Fără fundal */
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: color 0.2s ease;
+}
+
+.add-to-favorite{
+  right:240px;
+}
+
+.save-to-gallery:hover, .add-to-favorite {
+  color: #ffffff; /* albastru-verzui deschis la hover */
+}
+
+.lightbox-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}

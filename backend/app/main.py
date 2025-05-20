@@ -17,7 +17,7 @@ app = FastAPI()
 #  CORS Middleware – trebuie pus ÎNAINTE de rute
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Your frontend's URL
+    allow_origins=["http://localhost:5173"],  # Your frontend's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -38,8 +38,15 @@
         }
     
       } catch (err) {
-        alert("Email sau parolă greșită!");
-        console.error(err);
+        if (err.response) {
+          // Server responded with a status code outside the 2xx range
+          console.error("Error response:", err.response);
+          alert(`Error: ${err.response.data.message || "Email sau parolă greșită!"}`);
+        } else {
+          // Network error or other issues
+          console.error("Error message:", err.message);
+          alert("An unexpected error occurred. Please try again.");
+        }
       }
     };
     

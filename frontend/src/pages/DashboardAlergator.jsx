@@ -13,12 +13,47 @@ const DashboardAlergator = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [matchResults, setMatchResults] = useState([]);
   const [activeTab, setActiveTab] = useState("match");
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [favoritePhotos, setFavoritePhotos] = useState([]);
+  const [favoriteOpen, setFavoriteOpen] = useState(false);
+  const [favoriteIndex, setFavoriteIndex] = useState(0);
+
+
 
   useEffect(() => {
     axios.get("http://127.0.0.1:8000/contests")
       .then(res => setContests(res.data))
       .catch(err => console.error("Eroare la preluare concursuri:", err));
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "gallery") {
+      const token = localStorage.getItem("token");
+      axios.get("http://127.0.0.1:8000/my-matches", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+        .then(res => setGalleryPhotos(res.data.matched_photos))
+        .catch(err => console.error("Eroare la galeria mea:", err));
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "favorites") {
+      const token = localStorage.getItem("token");
+      axios.get("http://127.0.0.1:8000/favorites", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+        .then(res => setFavoritePhotos(res.data.favorites))
+        .catch(err => console.error("Eroare la favorite:", err));
+    }
+  }, [activeTab]);
+
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -49,6 +84,64 @@ const DashboardAlergator = () => {
       alert("Eroare la încărcarea pozei.");
     }
   };
+
+  const handleSave = async (imagePath) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Trebuie să fii logat.");
+      return;
+    }
+
+    // ✅ verificăm dacă poza e deja în galerie
+    if (galleryPhotos.includes(imagePath)) {
+      alert("✅ Această poză este deja în galeria ta.");
+      return;
+    }
+
+    try {
+      await axios.post("http://127.0.0.1:8000/save-to-gallery", {
+        image_path: imagePath
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      alert("✔️ Imagine salvată în galeria ta!");
+      setGalleryPhotos(prev => [...prev, imagePath]); // ⬅️ actualizăm galeria local
+    } catch (err) {
+      console.error("❌ Eroare la salvare:", err);
+      alert("A apărut o problemă.");
+    }
+  };
+
+  const handleAddToFavorites = async (imagePath) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Trebuie să fii logat.");
+      return;
+    }
+
+    try {
+      await axios.post("http://127.0.0.1:8000/add-to-favorites", {
+        image_path: imagePath
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      alert("⭐ Adăugat la favorite!");
+    } catch (err) {
+      console.error("❌ Eroare la favorite:", err);
+      if (err.response?.status === 409) {
+        alert("Poza este deja la favorite.");
+      } else {
+        alert("A apărut o problemă.");
+      }
+    }
+  };
+
+
 
   return (
     <div className="dashboard">
@@ -128,23 +221,103 @@ const DashboardAlergator = () => {
           </div>
         )}
 
-        {activeTab === "upcoming" && <h2>Concursuri viitoare – în curând</h2>}
-        {activeTab === "gallery" && <h2>Galeria mea – în curând</h2>}
-        {activeTab === "favorites" && <h2>Poze favorite – în curând</h2>}
-        {open && (
-          <Lightbox
-            open={open}
-            close={() => setOpen(false)}
-            index={index}
-            slides={matchResults.map((imgPath) => ({
-              src: `http://127.0.0.1:8000/uploads/${imgPath}`,
-            }))}
-          />
+        {activeTab === "favorites" && (
+          <section className="results">
+            <h2>Poze favorite</h2>
+            {favoritePhotos.length > 0 ? (
+              <div className="gallery">
+                {favoritePhotos.map((imgPath, index) => (
+                  <img
+                    key={index}
+                    src={`http://127.0.0.1:8000/uploads/${imgPath}`}
+                    alt="Poza favorită"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setFavoriteOpen(true);
+                      setFavoriteIndex(index);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">Nu ai poze favorite.</p>
+            )}
+          </section>
         )}
+
+
+        {activeTab === "gallery" && (
+          <section className="results">
+            <h2>Galeria mea</h2>
+            {galleryPhotos.length > 0 ? (
+              <div className="gallery">
+                {galleryPhotos.map((imgPath, index) => (
+                  <img
+                    key={index}
+                    src={`http://127.0.0.1:8000/uploads/${imgPath}`}
+                    alt="Poza salvată"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setGalleryOpen(true);
+                      setGalleryIndex(index);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">Nu ai poze salvate în galerie.</p>
+            )}
+          </section>
+        )}
+
+        <Lightbox
+          open={open}
+          close={() => setOpen(false)}
+          index={index}
+          slides={matchResults.map((imgPath) => ({
+            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
+          }))}
+          render={{
+            slideFooter: () => (
+              <div className="lightbox-actions">
+                <button
+                  className="save-to-gallery"
+                  onClick={() => handleSave(matchResults[index])}
+                >
+                  💾 Salvează în galerie
+                </button>
+
+                <button
+                  className="add-to-favorite"
+                  onClick={() => handleAddToFavorites(matchResults[index])}
+                >
+                  🤍 Adaugă la favorite
+                </button>
+              </div>
+            )
+          }}
+        />
+        <Lightbox
+          open={galleryOpen}
+          close={() => setGalleryOpen(false)}
+          index={galleryIndex}
+          slides={galleryPhotos.map((imgPath) => ({
+            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
+          }))}
+        />
+
+        <Lightbox
+          open={favoriteOpen}
+          close={() => setFavoriteOpen(false)}
+          index={favoriteIndex}
+          slides={favoritePhotos.map((imgPath) => ({
+            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
+          }))}
+        />
+
 
       </main>
     </div>
-
   );
 };
 

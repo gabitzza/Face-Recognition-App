@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String
 
 from app.core.database import Base
+from app.models.favorites import photo_favorite_table
 
 
 class Photo(Base):
@@ -24,3 +25,9 @@ class Photo(Base):
     # Relații (doar dacă ai deja User model)
     photographer = relationship("User", back_populates="photos_taken", foreign_keys=[photographer_id])
     matched_runner = relationship("User", back_populates="matched_photos", foreign_keys=[matched_runner_id])
+
+    favorited_by = relationship(
+        "User",
+        secondary=photo_favorite_table,
+        back_populates="favorite_photos"
+    )
