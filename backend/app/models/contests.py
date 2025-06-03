@@ -9,5 +9,6 @@ class Contest(Base):
     name = Column(String, nullable=False)
     location = Column(String)
     date = Column(DateTime)
+    image_path = Column(String, nullable=True) 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

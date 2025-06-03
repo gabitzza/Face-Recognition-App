@@ -2,6 +2,7 @@
   import axios from "axios";
   import { useNavigate } from "react-router-dom";
   import "./RegisterForm.css"; // sau un CSS separat
+  import '../assets/fonts/fonts.css';
 
   function Login() {
     const navigate = useNavigate();

@@ -4,6 +4,7 @@ import './dashboard.css';
 import { Home, Calendar, ImageIcon, Heart, LogOut } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import '../assets/fonts/fonts.css';
 
 const DashboardAlergator = () => {
   const [open, setOpen] = useState(false);
@@ -199,13 +200,13 @@ const DashboardAlergator = () => {
             </header>
 
             <section className="upload-form">
-              <label htmlFor="contest">Selectează concursul:</label>
+              <label htmlFor="contest">Selectează evenimentul:</label>
               <select
                 id="contest"
                 value={selectedContest}
                 onChange={(e) => setSelectedContest(e.target.value)}
               >
-                <option value="">-- alege un concurs --</option>
+                <option value="">-- alege un eveniment --</option>
                 {contests.map((contest) => (
                   <option key={contest.id} value={contest.id}>
                     {contest.name}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import '../assets/fonts/fonts.css';
 
 const DashboardFotograf = () => {
   const [file, setFile] = useState(null);
@@ -63,12 +64,12 @@ const DashboardFotograf = () => {
       <h2>Salut, {userName}!</h2>
 
       <div>
-        <label>Selectează un concurs:</label>
+        <label>Selectează un eveniment:</label>
         <select
           onChange={(e) => setContestId(Number(e.target.value))}
           value={contestId}
         >
-          <option value="">-- Alege un concurs --</option>
+          <option value="">-- Alege un eveniment --</option>
           {contests.map((contest) => (
             <option key={contest.id} value={contest.id}>
               {contest.name}

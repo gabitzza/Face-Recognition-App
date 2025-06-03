@@ -1,10 +1,12 @@
+@import url('../assets/fonts/fonts.css');
+
 .register-page {
   height: 100vh;
   background: #dff6f5;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .register-card {
@@ -19,6 +21,7 @@
 
 body{
    margin: 0px;
+   font-family: 'Poppins', sans-serif;
 }
 .left-panel {
   flex: 1;
@@ -59,6 +62,7 @@ body{
   display: flex;
   flex-direction: column;
   gap: 15px;
+
 }
 
 .register-form input,
@@ -67,6 +71,7 @@ body{
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 16px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .register-form button {

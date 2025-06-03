@@ -1,12 +1,4 @@
 /* dashboard.css */
-@import url('../assets/fonts/fonts.css');
-
-body {
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  background-color: #f5f7fa;
-  color: #1f2937;
-}
 
 .dashboard {
   display: flex;
