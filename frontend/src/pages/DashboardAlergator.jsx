@@ -122,13 +122,13 @@ const DashboardAlergator = () => {
       alert("Trebuie să fii logat.");
       return;
     }
-  
+
     // ✅ verificare locală dacă poza e deja în lista de favorite
     if (favoritePhotos.includes(imagePath)) {
       alert("✅ Această poză este deja la favorite.");
       return;
     }
-  
+
     try {
       await axios.post("http://127.0.0.1:8000/add-to-favorites", {
         image_path: imagePath
@@ -148,7 +148,7 @@ const DashboardAlergator = () => {
       }
     }
   };
-  
+
 
   const handleRemoveFromFavorites = async (imagePath) => {
     const token = localStorage.getItem("token");
@@ -173,8 +173,11 @@ const DashboardAlergator = () => {
     }
   };
 
-
-
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login"; // sau navigate("/login")
+  };
 
 
   return (
@@ -187,7 +190,10 @@ const DashboardAlergator = () => {
             <li className={activeTab === "upcoming" ? "active" : ""} onClick={() => setActiveTab("upcoming")}> <Calendar size={16} /> Concursuri viitoare</li>
             <li className={activeTab === "gallery" ? "active" : ""} onClick={() => setActiveTab("gallery")}> <ImageIcon size={16} /> Galeria mea</li>
             <li className={activeTab === "favorites" ? "active" : ""} onClick={() => setActiveTab("favorites")}> <Heart size={16} /> Poze favorite</li>
-            <li className="logout"><LogOut size={16} /> Logout</li>
+            <li className="logout" onClick={handleLogout}>
+              <LogOut size={16} /> Logout
+            </li>
+
           </ul>
         </nav>
       </aside>
