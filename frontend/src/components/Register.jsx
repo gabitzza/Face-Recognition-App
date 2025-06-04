@@ -34,7 +34,7 @@ function Register() {
     <div className="register-page">
       <div className="register-card">
         <div className="left-panel">
-          <h2>Welcome</h2>
+          <h2>Bine ai venit!</h2>
           <p>Înscrie-te și participă la evenimente sportive cu recunoaștere facială!</p>
         </div>
         <div className="right-panel">

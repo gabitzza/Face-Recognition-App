@@ -13,8 +13,9 @@ import './assets/fonts/fonts.css';
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* 🔒 Protejăm dashboard-urile */}
       <Route

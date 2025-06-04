@@ -23,7 +23,7 @@ const HomePage = () => {
         <div className="logo">PhotoMatch</div>
         <div className="auth-links">
           <a href="/login">Log In</a>
-          <a href="/Register">Register</a>
+          <a href="/register">Register</a>
         </div>
       </nav>
 
