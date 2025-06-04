@@ -19,6 +19,8 @@ router = APIRouter()
 # Configurare pentru hash-ul parolei
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+print(pwd_context.hash("admin123")) 
+
 # Funcție pentru a genera hash-ul parolei
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)

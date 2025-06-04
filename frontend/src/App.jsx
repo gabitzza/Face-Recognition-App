@@ -38,12 +38,12 @@ function App() {
       <Route
         path="/dashboard-admin"
         element={
-          <RequireAuth>
+          <RequireAuth allowedRoles={["admin"]}>
             <DashboardAdmin />
           </RequireAuth>
         }
       />
-     
+
     </Routes>
   );
 }
