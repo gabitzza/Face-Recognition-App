@@ -28,9 +28,9 @@ def delete_from_gallery(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # 1. Căutăm poza în DB (opțional)
+    # 🔁 Folosim matched_runner_id în loc de photographer_id
     photo = db.query(Photo).filter_by(
-        photographer_id=current_user.id,
+        matched_runner_id=current_user.id,
         image_path=data.image_path
     ).first()
 
@@ -38,10 +38,10 @@ def delete_from_gallery(
         db.delete(photo)
         db.commit()
 
-    # 2. Ștergere fișier de pe disc
+    # 🧹 Șterge fișierul de pe disc
     full_path = os.path.join("app", "uploads", data.image_path.replace("uploads/", ""))
     if os.path.exists(full_path):
         os.remove(full_path)
         return {"message": "Poza a fost ștearsă din galerie și din sistemul de fișiere."}
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Fișierul nu există.")
+        raise HTTPException(status_code=404, detail="Fișierul nu există.")

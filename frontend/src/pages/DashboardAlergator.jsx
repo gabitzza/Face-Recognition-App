@@ -159,12 +159,11 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("http://127.0.0.1:8000/remove-from-favorites", {
+      await axios.delete("http://127.0.0.1:8000/gallery/delete-from-gallery", {
         data: { image_path: imagePath },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
+        headers: { Authorization: `Bearer ${token}` }
       });
+
       alert("💔 Eliminat din favorite!");
       setFavoritePhotos(prev => prev.filter(path => path !== imagePath));
       setFavoriteOpen(false); // ← închide lightbox-ul după ștergere
