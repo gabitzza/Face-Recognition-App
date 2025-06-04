@@ -9,6 +9,7 @@ from app.api import gallery
 from fastapi.staticfiles import StaticFiles
 from app.api import contest 
 from app.api import match
+from app.api import gallery
 import os
 
 app = FastAPI()
@@ -33,6 +34,7 @@ app.include_router(gallery.router, tags=["Galerie"])
 app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "uploads")), name="uploads")
 app.include_router(match.router)
 app.include_router(contest.router)
+app.include_router(gallery.router)
 
 
 #  Middleware pentru logare requesturi

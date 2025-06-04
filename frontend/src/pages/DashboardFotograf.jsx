@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import '../assets/fonts/fonts.css';
+import './dashboard.css';
+
 
 const DashboardFotograf = () => {
   const [file, setFile] = useState(null);
@@ -59,11 +61,31 @@ const DashboardFotograf = () => {
     }
   };
 
-  return (
-    <div>
-      <h2>Salut, {userName}!</h2>
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  };
 
-      <div>
+
+  return (
+  <div className="dashboard">
+    <aside className="sidebar">
+      <h1 className="logo">FaceApp</h1>
+      <nav>
+        <ul>
+          <li>📷 Încarcă poze</li>
+          <li className="logout" onClick={handleLogout}>
+            Logout
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main className="content">
+      <h2>Bun venit, {userName}!</h2>
+
+      <div className="upload-form">
         <label>Selectează un eveniment:</label>
         <select
           onChange={(e) => setContestId(Number(e.target.value))}
@@ -76,25 +98,30 @@ const DashboardFotograf = () => {
             </option>
           ))}
         </select>
-      </div>
 
-      <div>
         <label>Titlu album:</label>
         <input
           type="text"
           value={albumTitle}
           onChange={(e) => setAlbumTitle(e.target.value)}
         />
-      </div>
 
-      <div>
-        <label>Selectează poze:</label>
-        <input type="file" multiple onChange={(e) => setFile(e.target.files)} />
-      </div>
+        <div className="custom-file-input">
+          <label htmlFor="fileUpload">Selectează poze</label>
+          <input
+            id="fileUpload"
+            type="file"
+            multiple
+            onChange={(e) => setFile(e.target.files)}
+          />
+        </div>
 
-      <button onClick={handleUpload}>Încarcă</button>
-    </div>
-  );
+        <button onClick={handleUpload}>📤 Încarcă</button>
+      </div>
+    </main>
+  </div>
+);
+
 };
 
 export default DashboardFotograf;

@@ -9,12 +9,11 @@ import GalerieFotograf from "./pages/GalerieFotograf";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import HomePage from './pages/HomePage';
 import './assets/fonts/fonts.css';
-import { Home } from "lucide-react";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
 
       {/* 🔒 Protejăm dashboard-urile */}
@@ -44,7 +43,7 @@ function App() {
           </RequireAuth>
         }
       />
-
+     
     </Routes>
   );
 }

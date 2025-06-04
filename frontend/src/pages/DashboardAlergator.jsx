@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import './dashboard.css';
-import { Home, Calendar, ImageIcon, Heart, LogOut } from "lucide-react";
+import { Home, Calendar, CalendarDays, ImageIcon, Heart, LogOut } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import UpcomingContestsCalendar from "../components/UpcomingContestsCalendar";
 import '../assets/fonts/fonts.css';
 
 const DashboardAlergator = () => {
@@ -173,6 +174,31 @@ const DashboardAlergator = () => {
     }
   };
 
+  const handleDeleteFromGallery = async (imagePath) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Trebuie să fii logat.");
+      return;
+    }
+
+    try {
+      await axios.delete("http://127.0.0.1:8000/delete-from-gallery", {
+        data: { image_path: imagePath },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setGalleryPhotos(prev => prev.filter(path => path !== imagePath));
+      setGalleryOpen(false);
+      alert("🗑️ Poza a fost ștearsă din galeria ta.");
+    } catch (err) {
+      console.error("Eroare la ștergerea pozei din galerie:", err);
+      alert("Nu am putut șterge poza.");
+    }
+  };
+
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -187,7 +213,9 @@ const DashboardAlergator = () => {
         <nav>
           <ul>
             <li className={activeTab === "match" ? "active" : ""} onClick={() => setActiveTab("match")}> <Home size={16} /> Caută poze</li>
-            <li className={activeTab === "upcoming" ? "active" : ""} onClick={() => setActiveTab("upcoming")}> <Calendar size={16} /> Concursuri viitoare</li>
+            <li className={activeTab === "calendar" ? "active" : ""} onClick={() => setActiveTab("calendar")}>
+              <CalendarDays size={16} /> Concursuri viitoare
+            </li>
             <li className={activeTab === "gallery" ? "active" : ""} onClick={() => setActiveTab("gallery")}> <ImageIcon size={16} /> Galeria mea</li>
             <li className={activeTab === "favorites" ? "active" : ""} onClick={() => setActiveTab("favorites")}> <Heart size={16} /> Poze favorite</li>
             <li className="logout" onClick={handleLogout}>
@@ -310,6 +338,11 @@ const DashboardAlergator = () => {
           </section>
         )}
 
+        {activeTab === "calendar" && (
+          <UpcomingContestsCalendar contests={contests} />
+        )}
+
+
         <Lightbox
           open={open}
           close={() => setOpen(false)}
@@ -353,6 +386,13 @@ const DashboardAlergator = () => {
                 >
                   🤍 Adaugă la favorite
                 </button>
+                <button
+                  className="remove-from-gallery"
+                  onClick={() => handleDeleteFromGallery(galleryPhotos[galleryIndex])}
+                >
+                  🗑️ Șterge din galerie
+                </button>
+
               </div>
             )
           }}
