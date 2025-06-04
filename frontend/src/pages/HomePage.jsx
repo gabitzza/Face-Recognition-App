@@ -22,7 +22,7 @@ const HomePage = () => {
       <nav className="navbar">
         <div className="logo">PhotoMatch</div>
         <div className="auth-links">
-          <a href="/login">Log In</a>
+          <a href="/login" >Log In</a>
           <a href="/register">Register</a>
         </div>
       </nav>
