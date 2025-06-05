@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import GalerieFotograf from "./pages/GalerieFotograf";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import HomePage from './pages/HomePage';
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import './assets/fonts/fonts.css';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/politica-confidentialitate" element={<PrivacyPolicy />} />
 
       {/* 🔒 Protejăm dashboard-urile */}
       <Route

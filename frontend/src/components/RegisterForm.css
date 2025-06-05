@@ -1,10 +1,12 @@
 @import url('../assets/fonts/fonts.css');
 
+
+
 .register-page {
   height: 100vh;
-  background: #dff6f5;
   display: flex;
   justify-content: center;
+  background: url('../pages/images/loginwallpaper.jpg') no-repeat center center/cover;
   align-items: center;
   font-family: 'Poppins', sans-serif;
 }
@@ -12,7 +14,7 @@
 .register-card {
   display: flex;
   width: 800px;
-  height: 500px;
+height: 600px;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
@@ -25,7 +27,7 @@ body{
 }
 .left-panel {
   flex: 1;
-  background: linear-gradient(135deg, #2ec4b6, #0fa3a3);
+    background: linear-gradient(135deg, #238980, #000000) ;
   color: white;
   display: flex;
   flex-direction: column;
@@ -76,7 +78,7 @@ body{
 
 .register-form button {
   padding: 12px;
-  background-color: #0fa3a3;
+      background: linear-gradient(135deg, #000000, #238980);
   color: white;
   border: none;
   border-radius: 8px;

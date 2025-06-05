@@ -8,6 +8,7 @@ function Register() {
     email: "",
     password: "",
     role: "alergator",
+    gdprAccepted: false,
   });
 
   const handleChange = (e) => {
@@ -68,6 +69,20 @@ function Register() {
               <option value="alergator">Alergător</option>
               <option value="fotograf">Fotograf</option>
             </select>
+            <div className="checkbox-container">
+              <input
+                type="checkbox"
+                id="gdpr"
+                checked={formData.gdprAccepted}
+                onChange={(e) =>
+                  setFormData({ ...formData, gdprAccepted: e.target.checked })
+                }
+                required
+              />
+              <label htmlFor="gdpr">
+                Sunt de acord cu <a href="/politica-confidentialitate" target="_blank">Politica de Confidențialitate</a> și cu prelucrarea datelor mele personale conform GDPR.
+              </label>
+            </div>
             <button type="submit">Înregistrează-te</button>
           </form>
         </div>
