@@ -8,7 +8,11 @@ const DashboardAdmin = () => {
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [contests, setContests] = useState([]);
+  const [contests, setContests] = useState([]); const [editingId, setEditingId] = useState(null);
+  const [updatedName, setUpdatedName] = useState("");
+  const [updatedDate, setUpdatedDate] = useState("");
+  const [newImage, setNewImage] = useState(null);
+
 
   useEffect(() => {
     axios.get("http://127.0.0.1:8000/contests")
@@ -88,32 +92,95 @@ const DashboardAdmin = () => {
           {contests.map((contest) => (
             <li key={contest.id}>
               {contest.image_path && (
-                <img
-                  src={`http://127.0.0.1:8000/${contest.image_path}`}
-                  alt="afis"
-                />
+                <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt="afis" />
               )}
+
               <div className="event-info">
-                <h4 className="event-title">{contest.name}</h4>
-                <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
-                <button
-                  className="delete-button"
-                  onClick={async () => {
-                    if (confirm("Ești sigur că vrei să ștergi acest concurs?")) {
-                      try {
-                        await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
-                        setContests(contests.filter(c => c.id !== contest.id));
-                      } catch (err) {
-                        alert("Eroare la ștergerea concursului.");
-                        console.error(err);
-                      }
-                    }
-                  }}
-                >
-                  🗑️ Șterge
-                </button>
+                {editingId === contest.id ? (
+                  <>
+                    <input
+                      type="text"
+                      value={updatedName}
+                      onChange={(e) => setUpdatedName(e.target.value)}
+                      placeholder="Nume concurs"
+                    />
+                    <input
+                      type="date"
+                      value={updatedDate}
+                      onChange={(e) => setUpdatedDate(e.target.value)}
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setNewImage(e.target.files[0])}
+                    />
+
+                    <button
+                      onClick={async () => {
+                        const formData = new FormData();
+                        formData.append("name", updatedName);
+                        formData.append("date", updatedDate);
+                        if (newImage) {
+                          formData.append("image", newImage);
+                        }
+
+                        try {
+                          await axios.put(`http://127.0.0.1:8000/contests/${contest.id}`, formData, {
+                            headers: { "Content-Type": "multipart/form-data" },
+                          });
+
+                          const refreshed = await axios.get("http://127.0.0.1:8000/contests");
+                          setContests(refreshed.data);
+                          setEditingId(null);
+                          setUpdatedName("");
+                          setUpdatedDate("");
+                          setNewImage(null);
+                        } catch (err) {
+                          alert("Eroare la actualizare.");
+                          console.error(err);
+                        }
+                      }}
+                    >
+                      💾 Salvează
+                    </button>
+                    <button onClick={() => setEditingId(null)}>❌ Anulează</button>
+                  </>
+                ) : (
+                  <>
+                    <h4 className="event-title">{contest.name}</h4>
+                    <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
+
+                    <button
+                      onClick={() => {
+                        setEditingId(contest.id);
+                        setUpdatedName(contest.name);
+                        setUpdatedDate(contest.date.slice(0, 10));
+                      }}
+                    >
+                      ✏️ Editează
+                    </button>
+
+                    <button
+                      className="delete-button"
+                      onClick={async () => {
+                        if (confirm("Ești sigur că vrei să ștergi acest concurs?")) {
+                          try {
+                            await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
+                            setContests(contests.filter(c => c.id !== contest.id));
+                          } catch (err) {
+                            alert("Eroare la ștergerea concursului.");
+                            console.error(err);
+                          }
+                        }
+                      }}
+                    >
+                      🗑️ Șterge
+                    </button>
+                  </>
+                )}
               </div>
             </li>
+
           ))}
         </ul>
       </main>

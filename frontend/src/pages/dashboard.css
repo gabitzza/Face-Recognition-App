@@ -437,3 +437,9 @@
 .delete-button:hover {
   background-color: #b91c1c;
 }
+
+.event-info button {
+  display: block;
+  margin: 0.5rem auto;
+  width: 80%;
+}
