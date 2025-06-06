@@ -202,8 +202,8 @@ h2 {
 .stats-section {
   background: #01161E;
   color: #fff;
-  padding: 3.5rem 0 3rem 0;
-  margin: 0 0 2rem 0;
+  padding: 3.5rem 0 6rem 0;
+  margin: 2rem 4rem;
   opacity: 0;
   transform: translateY(60px);
   transition: opacity 0.8s cubic-bezier(.4, 0, .2, 1), transform 0.8s cubic-bezier(.4, 0, .2, 1);
@@ -213,6 +213,7 @@ h2 {
 .stats-section.visible {
   opacity: 1;
   transform: translateY(0);
+  border-bottom: 1.4px solid #49C6E5
 }
 
 .stats-container {
@@ -223,6 +224,10 @@ h2 {
   max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap;
+}
+
+.contests-section {
+  margin-top: 4rem;
 }
 
 .stats-intro {
@@ -312,6 +317,18 @@ h2 {
   margin-bottom: 0.2rem;
 }
 
+.contests-title {
+  margin-left: 100px;
+}
+
+.contests-title-svg {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
 /* CAROUSEL */
 .carousel-container {
   position: relative;
@@ -319,15 +336,17 @@ h2 {
   align-items: center;
   justify-content: space-around;
   min-height: 370px;
-  margin: 2rem 0;
+  margin: 4rem 0;
   align-content: center;
   flex-wrap: wrap;
 }
 
 .carousel-track {
   position: relative;
-  width: 820px; /* mărit pentru carduri mai mari */
-  height: 420px; /* mărit pentru carduri mai mari */
+  width: 820px;
+  /* mărit pentru carduri mai mari */
+  height: 420px;
+  /* mărit pentru carduri mai mari */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -337,14 +356,16 @@ h2 {
 .carousel-card {
   position: absolute;
   top: 0;
-  width: 320px;      /* mărit */
-  height: 400px;     /* mărit */
+  width: 320px;
+  /* mărit */
+  height: 400px;
+  /* mărit */
   background: #01161E;
   border-radius: 1.7rem;
-  box-shadow: 0 6px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.18);
   overflow: hidden;
-  transition: 
-    transform 0.5s cubic-bezier(.4,0,.2,1),
+  transition:
+    transform 0.5s cubic-bezier(.4, 0, .2, 1),
     box-shadow 0.3s,
     opacity 0.3s;
   cursor: pointer;
@@ -356,10 +377,26 @@ h2 {
 }
 
 .carousel-card.center {
-  box-shadow: 0 8px 36px rgba(1,111,185,0.18);
+  box-shadow: 0 8px 36px rgba(1, 111, 185, 0.18);
   opacity: 1;
   pointer-events: auto;
   border: 2px solid #016FB9;
+}
+
+.carousel-card.center.slide-left {
+  animation: slideLeft 0.5s;
+}
+.carousel-card.center.slide-right {
+  animation: slideRight 0.5s;
+}
+
+@keyframes slideLeft {
+  0% { transform: translateX(-210px) scale(0.8); opacity: 0.7; }
+  100% { transform: translateX(0) scale(1.1); opacity: 1; }
+}
+@keyframes slideRight {
+  0% { transform: translateX(210px) scale(0.8); opacity: 0.7; }
+  100% { transform: translateX(0) scale(1.1); opacity: 1; }
 }
 
 .carousel-card img {
@@ -371,7 +408,8 @@ h2 {
 }
 
 .carousel-card-info {
-  padding: 1.4rem 1.5rem 1.2rem 1.5rem; /* mai mult spațiu */
+  padding: 1.4rem 1.5rem 1.2rem 1.5rem;
+  /* mai mult spațiu */
   color: #fff;
   flex: 1;
   display: flex;
@@ -475,4 +513,44 @@ a:active,
 a:hover {
   color: #fff !important;
   text-decoration: none !important;
+}
+
+.contests-section,
+.past-contests-section {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(.4, 0, .2, 1), transform 0.8s cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity, transform;
+}
+
+.contests-section.visible,
+.past-contests-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.custom-middle-section {
+  background: #fff;
+  padding: 3rem 0 3rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-middle-content {
+  max-width: 700px;
+  text-align: center;
+  color: #01161E;
+}
+
+.custom-middle-content h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.custom-middle-content p {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #234;
 }

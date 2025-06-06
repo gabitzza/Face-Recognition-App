@@ -13,12 +13,17 @@ const ContestCarousel = ({ contests }) => {
     if (idx === -1) idx = 0;
     return idx;
   });
+  const [direction, setDirection] = useState(null);
 
-  const handleLeft = () =>
+  const handleLeft = () => {
+    setDirection('left');
     setCenterIdx(i => (i === 0 ? sorted.length - 1 : i - 1));
+  };
 
-  const handleRight = () =>
+  const handleRight = () => {
+    setDirection('right');
     setCenterIdx(i => (i === sorted.length - 1 ? 0 : i + 1));
+  };
 
   return (
     <div className="carousel-container">
@@ -34,7 +39,7 @@ const ContestCarousel = ({ contests }) => {
           return (
             <div
               key={contest.id}
-              className={`carousel-card${offset === 0 ? " center" : ""}`}
+              className={`carousel-card${offset === 0 ? " center" : ""}${offset === 0 && direction ? ` slide-${direction}` : ""}`}
               style={{
                 transform: `
                   translateX(${offset * 210}px)
@@ -43,7 +48,7 @@ const ContestCarousel = ({ contests }) => {
                       ? 1.1
                       : Math.abs(offset) === 1
                       ? 0.8
-                      : 0.6 // pentru offset ±2, cardurile din spate sunt și mai mici
+                      : 0.6
                   })
                   perspective(550px)
                   rotateY(${offset * 10}deg)
@@ -51,6 +56,12 @@ const ContestCarousel = ({ contests }) => {
                 `,
                 zIndex: 10 - Math.abs(offset),
                 opacity: Math.abs(offset) > 2 ? 0 : 1,
+                cursor: offset === 0 && contest.website_url ? "pointer" : "default"
+              }}
+              onClick={() => {
+                if (offset === 0 && contest.website_url) {
+                  window.open(contest.website_url, "_blank", "noopener,noreferrer");
+                }
               }}
             >
               <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
@@ -63,6 +74,7 @@ const ContestCarousel = ({ contests }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="carousel-card-link"
+                    onClick={e => e.stopPropagation()}
                   >
                     Vezi site
                   </a>
@@ -81,7 +93,9 @@ const HomePage = () => {
   const [contests, setContests] = useState([]);
   const videoRef = useRef(null);
   const statsRef = useRef(null);
+  const contestsRef = useRef();
   const [statsVisible, setStatsVisible] = useState(false);
+  const [contestsVisible, setContestsVisible] = useState(false);
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/contests')
@@ -115,6 +129,15 @@ const HomePage = () => {
       { threshold: 0.3 }
     );
     if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
+      ([entry]) => setContestsVisible(entry.isIntersecting),
+      { threshold: 0.2 }
+    );
+    if (contestsRef.current) observer.observe(contestsRef.current);
     return () => observer.disconnect();
   }, []);
 
@@ -190,14 +213,38 @@ const HomePage = () => {
       </section>
 
       {/* EVENIMENTE VIITOARE */}
-      <section>
-        <h2>Evenimente viitoare</h2>
+      <section
+        className={`contests-section${contestsVisible ? " visible" : ""}`}
+        ref={contestsRef}
+      >
+        <div className="contests-title-svg">
+          <svg width="600" height="100">
+            <defs>
+              <path id="curve" d="M60,60 Q300,10 540,60" />
+            </defs>
+            <text width="600" style={{ fontSize: '2.7rem', fontWeight: 800, fill: '#fff', letterSpacing: '2px' }}>
+              <textPath xlinkHref="#curve" startOffset="0%">
+                Evenimente viitoare
+              </textPath>
+            </text>
+          </svg>
+        </div>
         <ContestCarousel contests={futureContests} />
+      </section>
+
+      {/* SECTIUNE NOUA INTRE EVENIMENTE */}
+      <section className="custom-middle-section">
+        <div className="custom-middle-content">
+          <h2>Descoperă experiența PhotoMatch</h2>
+          <p>
+            Fie că ești alergător, organizator sau fotograf, platforma noastră îți oferă instrumente moderne pentru a trăi și împărtăși fiecare moment al evenimentului sportiv.
+          </p>
+        </div>
       </section>
 
       {/* EVENIMENTE ANTERIOARE */}
       <section style={{ marginTop: '4rem' }}>
-        <h2>Evenimente anterioare</h2>
+        <h2 className="contests-title">Evenimente anterioare</h2>
         <div className="event-grid">
           {pastContests.map(contest => (
             <div className="event-card" key={contest.id}>
