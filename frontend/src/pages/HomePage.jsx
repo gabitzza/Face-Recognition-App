@@ -1,6 +1,81 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import axios from 'axios';
 import './homePage.css';
+
+const sortByDate = (a, b) => new Date(a.date) - new Date(b.date);
+
+const ContestCarousel = ({ contests }) => {
+  const sorted = useMemo(() => [...contests].sort(sortByDate), [contests]);
+  const [centerIdx, setCenterIdx] = useState(() => {
+    // Cel mai apropiat concurs de azi
+    const now = new Date();
+    let idx = sorted.findIndex(c => new Date(c.date) >= now);
+    if (idx === -1) idx = 0;
+    return idx;
+  });
+
+  const handleLeft = () =>
+    setCenterIdx(i => (i === 0 ? sorted.length - 1 : i - 1));
+
+  const handleRight = () =>
+    setCenterIdx(i => (i === sorted.length - 1 ? 0 : i + 1));
+
+  return (
+    <div className="carousel-container">
+      <button className="carousel-btn left" onClick={handleLeft}>&lt;</button>
+      <div className="carousel-track">
+        {sorted.map((contest, idx) => {
+          // offset circular
+          let offset = idx - centerIdx;
+          const half = Math.floor(sorted.length / 2);
+          if (offset > half) offset -= sorted.length;
+          if (offset < -half) offset += sorted.length;
+          if (Math.abs(offset) > 2) return null;
+          return (
+            <div
+              key={contest.id}
+              className={`carousel-card${offset === 0 ? " center" : ""}`}
+              style={{
+                transform: `
+                  translateX(${offset * 210}px)
+                  scale(${
+                    offset === 0
+                      ? 1.1
+                      : Math.abs(offset) === 1
+                      ? 0.8
+                      : 0.6 // pentru offset ±2, cardurile din spate sunt și mai mici
+                  })
+                  perspective(550px)
+                  rotateY(${offset * 10}deg)
+                  translateZ(${offset === 0 ? 0 : 60}px)
+                `,
+                zIndex: 10 - Math.abs(offset),
+                opacity: Math.abs(offset) > 2 ? 0 : 1,
+              }}
+            >
+              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
+              <div className="carousel-card-info">
+                <div className="carousel-card-title">{contest.name}</div>
+                <div className="carousel-card-date">{new Date(contest.date).toLocaleDateString()}</div>
+                {contest.website_url && (
+                  <a
+                    href={contest.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="carousel-card-link"
+                  >
+                    Vezi site
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <button className="carousel-btn right" onClick={handleRight}>&gt;</button>
+    </div>
+  );
+};
 
 const HomePage = () => {
   const [contests, setContests] = useState([]);
@@ -117,32 +192,7 @@ const HomePage = () => {
       {/* EVENIMENTE VIITOARE */}
       <section>
         <h2>Evenimente viitoare</h2>
-        <div className="event-grid">
-          {futureContests.map(contest => (
-            <a
-              key={contest.id}
-              className="event-card"
-              href={contest.url || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
-              <div className="event-info">
-                <div className="event-title">{contest.name}</div>
-                <div className="event-date">{new Date(contest.date).toLocaleDateString()}</div>
-              </div>
-              <div className="event-card-footer">
-                <span>Detalii</span>
-                <span className="event-action">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" fill="#016FB9" />
-                    <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
+        <ContestCarousel contests={futureContests} />
       </section>
 
       {/* EVENIMENTE ANTERIOARE */}

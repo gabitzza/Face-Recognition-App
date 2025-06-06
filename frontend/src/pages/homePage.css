@@ -67,7 +67,7 @@
   color: #fff;
   font-weight: 600;
   border-radius: 1.2rem;
-  box-shadow: 0 2px 8px rgba(1,111,185,0.08);
+  box-shadow: 0 2px 8px rgba(1, 111, 185, 0.08);
   padding: 0.35rem 1.3rem;
 }
 
@@ -83,7 +83,7 @@
 }
 
 .auth-links a:hover:not(.register-link) {
-  background: rgba(1,111,185,0.12);
+  background: rgba(1, 111, 185, 0.12);
   color: #fff;
 }
 
@@ -100,28 +100,38 @@
   padding: 15rem 2rem;
   color: #fff;
   background-color: #222;
-  border-radius: 3rem;       /* colțuri rotunjite */
-  margin-top: 5rem; /* pentru a evita suprapunerea cu navbar-ul */
+  border-radius: 3rem;
+  /* colțuri rotunjite */
+  margin-top: 5rem;
+  /* pentru a evita suprapunerea cu navbar-ul */
 }
 
 .hero-video-bg {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0.6; /* ajustează după preferință */
+  opacity: 0.6;
+  /* ajustează după preferință */
   pointer-events: none;
 }
 
 .hero-overlay {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.43); /* ajustează opacitatea după preferință */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.43);
+  /* ajustează opacitatea după preferință */
   z-index: 1;
   pointer-events: none;
 }
 
-.hero > *:not(.hero-video-bg):not(.hero-overlay) {
+.hero>*:not(.hero-video-bg):not(.hero-overlay) {
   position: relative;
   z-index: 2;
 }
@@ -196,7 +206,7 @@ h2 {
   margin: 0 0 2rem 0;
   opacity: 0;
   transform: translateY(60px);
-  transition: opacity 0.8s cubic-bezier(.4,0,.2,1), transform 0.8s cubic-bezier(.4,0,.2,1);
+  transition: opacity 0.8s cubic-bezier(.4, 0, .2, 1), transform 0.8s cubic-bezier(.4, 0, .2, 1);
   will-change: opacity, transform;
 }
 
@@ -239,7 +249,7 @@ h2 {
 }
 
 .stats-intro .stats-btn {
-  background:#016FB9;
+  background: #016FB9;
   color: #fff;
   font-weight: 700;
   font-size: 1.1rem;
@@ -302,10 +312,135 @@ h2 {
   margin-bottom: 0.2rem;
 }
 
+/* CAROUSEL */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-height: 370px;
+  margin: 2rem 0;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.carousel-track {
+  position: relative;
+  width: 820px; /* mărit pentru carduri mai mari */
+  height: 420px; /* mărit pentru carduri mai mari */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.carousel-card {
+  position: absolute;
+  top: 0;
+  width: 320px;      /* mărit */
+  height: 400px;     /* mărit */
+  background: #01161E;
+  border-radius: 1.7rem;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.18);
+  overflow: hidden;
+  transition: 
+    transform 0.5s cubic-bezier(.4,0,.2,1),
+    box-shadow 0.3s,
+    opacity 0.3s;
+  cursor: pointer;
+  opacity: 0.7;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel-card.center {
+  box-shadow: 0 8px 36px rgba(1,111,185,0.18);
+  opacity: 1;
+  pointer-events: auto;
+  border: 2px solid #016FB9;
+}
+
+.carousel-card img {
+  width: 100%;
+  height: 62%;
+  object-fit: cover;
+  border-top-left-radius: 1.7rem;
+  border-top-right-radius: 1.7rem;
+}
+
+.carousel-card-info {
+  padding: 1.4rem 1.5rem 1.2rem 1.5rem; /* mai mult spațiu */
+  color: #fff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.carousel-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.carousel-card-date {
+  font-size: 0.97rem;
+  color: #b3e0ff;
+  margin-bottom: 0.7rem;
+}
+
+.carousel-card-link {
+  color: #fff;
+  background: #016FB9;
+  border-radius: 0.7rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.97rem;
+  text-align: center;
+  margin-top: 0.3rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+}
+
+.carousel-card-link:hover {
+  background: #005a94;
+}
+
+.carousel-btn {
+  background: #016FB9;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2.7rem;
+  height: 2.7rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin: 0 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 20;
+}
+
+.carousel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ANIMAȚIE */
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInRight {
@@ -313,6 +448,7 @@ h2 {
     opacity: 0;
     transform: translateX(60px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
