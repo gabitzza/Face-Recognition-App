@@ -11,4 +11,6 @@ class Contest(Base):
     date = Column(DateTime)
     image_path = Column(String, nullable=True) 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    url = Column(String, nullable=True)
+
 

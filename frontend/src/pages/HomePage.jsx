@@ -49,7 +49,7 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      
+
       {/* NAVBAR */}
       <nav className="navbar">
         <div className="logo">PhotoMatch</div>
@@ -79,47 +79,53 @@ const HomePage = () => {
         className={`stats-section${statsVisible ? " visible" : ""}`}
         ref={statsRef}
       >
-  <div className="stats-container">
-    <div className="stats-intro">
-      <h2>Get your event<br />LIVE with us!</h2>
-      <p>Marathon Photos Live is world leading in event sports photography.</p>
-      <button className="stats-btn">ORGANISERS<br />CONTACT US NOW!</button>
-    </div>
-    <div className="stats-items">
-      <div className="stats-item">
-        <div className="stats-icon">
-          {/* Globe SVG */}
-          <svg width="80" height="75" fill="none" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" stroke="#00e6e6" strokeWidth="3"/><ellipse cx="24" cy="24" rx="8" ry="20" stroke="#00e6e6" strokeWidth="3"/><line x1="4" y1="24" x2="44" y2="24" stroke="#00e6e6" strokeWidth="3"/></svg>
+        <div className="stats-container">
+          <div className="stats-intro">
+            <h2>Fă-ți evenimentul<br />LIVE cu noi!</h2>
+            <p>Marathon Photos Live este lider mondial în fotografia sportivă de eveniment.</p>
+            <button className="stats-btn">ORGANIZATORI<br />CONTACTAȚI-NE ACUM!</button>
+          </div>
+          <div className="stats-items">
+            <div className="stats-item">
+              <div className="stats-icon">
+                {/* Globe SVG */}
+                <svg width="48" height="48" fill="none" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" stroke="#00e6e6" strokeWidth="3"/><ellipse cx="24" cy="24" rx="8" ry="20" stroke="#00e6e6" strokeWidth="3"/><line x1="4" y1="24" x2="44" y2="24" stroke="#00e6e6" strokeWidth="3"/></svg>
+              </div>
+              <div className="stats-number">70</div>
+              <div className="stats-label">Prezent în 70<br />de țări</div>
+            </div>
+            <div className="stats-item">
+              <div className="stats-icon">
+                {/* Camera SVG */}
+                <svg width="48" height="48" fill="none" viewBox="0 0 48 48"><rect x="8" y="14" width="32" height="24" rx="4" stroke="#00e6e6" strokeWidth="3"/><circle cx="24" cy="26" r="7" stroke="#00e6e6" strokeWidth="3"/><rect x="18" y="10" width="12" height="6" rx="2" stroke="#00e6e6" strokeWidth="3"/></svg>
+              </div>
+              <div className="stats-number">200</div>
+              <div className="stats-label">Peste 200 de milioane<br />de imagini</div>
+            </div>
+            <div className="stats-item">
+              <div className="stats-icon">
+                {/* Winner SVG */}
+                <svg width="48" height="48" fill="none" viewBox="0 0 48 48"><circle cx="24" cy="18" r="6" stroke="#00e6e6" strokeWidth="3"/><path d="M24 24V38" stroke="#00e6e6" strokeWidth="3"/><path d="M24 38L16 44" stroke="#00e6e6" strokeWidth="3"/><path d="M24 38L32 44" stroke="#00e6e6" strokeWidth="3"/><path d="M18 28L24 24L30 28" stroke="#00e6e6" strokeWidth="3"/></svg>
+              </div>
+              <div className="stats-number">8</div>
+              <div className="stats-label">Peste 8 mii<br />de evenimente</div>
+            </div>
+          </div>
         </div>
-        <div className="stats-number">70</div>
-        <div className="stats-label">Operating in 70<br />Countries</div>
-      </div>
-      <div className="stats-item">
-        <div className="stats-icon">
-          {/* Camera SVG */}
-          <svg width="80" height="75" fill="none" viewBox="0 0 48 48"><rect x="8" y="14" width="32" height="24" rx="4" stroke="#00e6e6" strokeWidth="3"/><circle cx="24" cy="26" r="7" stroke="#00e6e6" strokeWidth="3"/><rect x="18" y="10" width="12" height="6" rx="2" stroke="#00e6e6" strokeWidth="3"/></svg>
-        </div>
-        <div className="stats-number">200</div>
-        <div className="stats-label">Over 200 Million<br />Images</div>
-      </div>
-      <div className="stats-item">
-        <div className="stats-icon">
-          {/* Winner SVG */}
-          <svg width="80" height="75" fill="none" viewBox="0 0 48 48"><circle cx="24" cy="18" r="6" stroke="#00e6e6" strokeWidth="3"/><path d="M24 24V38" stroke="#00e6e6" strokeWidth="3"/><path d="M24 38L16 44" stroke="#00e6e6" strokeWidth="3"/><path d="M24 38L32 44" stroke="#00e6e6" strokeWidth="3"/><path d="M18 28L24 24L30 28" stroke="#00e6e6" strokeWidth="3"/></svg>
-        </div>
-        <div className="stats-number">8</div>
-        <div className="stats-label">Over 8 Thousand<br />Events</div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       {/* EVENIMENTE VIITOARE */}
       <section>
         <h2>Evenimente viitoare</h2>
         <div className="event-grid">
           {futureContests.map(contest => (
-            <div className="event-card" key={contest.id}>
+            <a
+              key={contest.id}
+              className="event-card"
+              href={contest.url || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
               <div className="event-info">
                 <div className="event-title">{contest.name}</div>
@@ -128,14 +134,13 @@ const HomePage = () => {
               <div className="event-card-footer">
                 <span>Detalii</span>
                 <span className="event-action">
-                  {/* Icon coș (SVG) */}
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" fill="#016FB9"/>
-                    <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="10" fill="#016FB9" />
+                    <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>

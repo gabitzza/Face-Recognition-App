@@ -12,6 +12,9 @@ const DashboardAdmin = () => {
   const [updatedName, setUpdatedName] = useState("");
   const [updatedDate, setUpdatedDate] = useState("");
   const [newImage, setNewImage] = useState(null);
+  const [url, setUrl] = useState("");
+  const [updatedUrl, setUpdatedUrl] = useState("");
+
 
 
   useEffect(() => {
@@ -26,6 +29,7 @@ const DashboardAdmin = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("date", date);
+    formData.append("url", url);
     if (imageFile) {
       formData.append("image", imageFile);
     }
@@ -71,6 +75,17 @@ const DashboardAdmin = () => {
             onChange={(e) => setDate(e.target.value)}
           />
 
+          <div style={{ marginTop: "1rem" }}>
+            <label>URL site oficial:</label><br />
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://exemplu.ro"
+            />
+          </div>
+
+
           <label>Imagine afiș:</label>
           <div className="custom-file-input">
             <label htmlFor="fileUpload">Alege imaginea afișului</label>
@@ -109,17 +124,29 @@ const DashboardAdmin = () => {
                       value={updatedDate}
                       onChange={(e) => setUpdatedDate(e.target.value)}
                     />
+                    <div>
+                      <label>URL site oficial:</label><br />
+                      <input
+                        type="url"
+                        value={updatedUrl}
+                        onChange={(e) => setUpdatedUrl(e.target.value)}
+                        placeholder="https://exemplu.ro"
+                      />
+                    </div>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => setNewImage(e.target.files[0])}
                     />
 
+
+
                     <button
                       onClick={async () => {
                         const formData = new FormData();
                         formData.append("name", updatedName);
                         formData.append("date", updatedDate);
+                        formData.append("url", updatedUrl);
                         if (newImage) {
                           formData.append("image", newImage);
                         }
@@ -155,6 +182,7 @@ const DashboardAdmin = () => {
                         setEditingId(contest.id);
                         setUpdatedName(contest.name);
                         setUpdatedDate(contest.date.slice(0, 10));
+                        setUpdatedUrl(contest.url || "");
                       }}
                     >
                       ✏️ Editează

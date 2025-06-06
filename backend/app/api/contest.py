@@ -10,12 +10,14 @@ router = APIRouter()
 from fastapi import UploadFile, File, Form
 import shutil, os
 from datetime import datetime
+from typing import Optional
 
 @router.post("/contests", response_model=schemas.ContestOut)
 def create_contest(
     name: str = Form(...),
     date: str = Form(...),
     image: UploadFile = File(None),
+    url: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     image_path = None
@@ -28,7 +30,12 @@ def create_contest(
             shutil.copyfileobj(image.file, buffer)
         image_path = f"uploads/contests/{filename}" 
 
-    db_contest = models.Contest(name=name, date=date, image_path=image_path)
+    db_contest = models.Contest(
+    name=name,
+    date=date,
+    url=url,  
+    image_path=image_path
+    )
     db.add(db_contest)
     db.commit()
     db.refresh(db_contest)
@@ -56,6 +63,7 @@ def update_contest(
     contest_id: int,
     name: str = Form(...),
     date: str = Form(...),
+    url: Optional[str] = Form(None), 
     image: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
@@ -65,6 +73,7 @@ def update_contest(
 
     contest.name = name
     contest.date = date
+    contest.url = url
 
     if image:
         # Șterge vechea imagine

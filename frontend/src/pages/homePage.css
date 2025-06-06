@@ -332,3 +332,11 @@ h2 {
 .hero p {
   animation-delay: 0.6s;
 }
+
+a,
+a:visited,
+a:active,
+a:hover {
+  color: #fff !important;
+  text-decoration: none !important;
+}
