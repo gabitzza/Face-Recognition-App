@@ -421,3 +421,19 @@
   cursor: pointer;
 }
 
+
+.delete-button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}

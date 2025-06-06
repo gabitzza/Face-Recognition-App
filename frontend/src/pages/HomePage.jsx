@@ -5,6 +5,8 @@ import './homePage.css';
 const HomePage = () => {
   const [contests, setContests] = useState([]);
   const videoRef = useRef(null);
+  const statsRef = useRef(null);
+  const [statsVisible, setStatsVisible] = useState(false);
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/contests')
@@ -25,6 +27,20 @@ const HomePage = () => {
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     return () => video.removeEventListener('timeupdate', handleTimeUpdate);
+  }, []);
+
+  useEffect(() => {
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStatsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const now = new Date();
@@ -58,8 +74,11 @@ const HomePage = () => {
         <p>Înscrie-te, încarcă poze sau caută-te în galerie cu recunoaștere facială.</p>
       </header>
 
-      {/* STATISTICS SECTION - mutat imediat sub HERO */}
-      <section className="stats-section">
+      {/* STATISTICS SECTION */}
+      <section
+        className={`stats-section${statsVisible ? " visible" : ""}`}
+        ref={statsRef}
+      >
   <div className="stats-container">
     <div className="stats-intro">
       <h2>Get your event<br />LIVE with us!</h2>

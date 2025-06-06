@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.schemas import contest as schemas
 from app.models import contests as models
 from app.core.database import get_db
+from fastapi import HTTPException
 
 router = APIRouter()
 
@@ -32,3 +33,20 @@ def create_contest(
     db.commit()
     db.refresh(db_contest)
     return db_contest
+
+
+@router.delete("/contests/{contest_id}")
+def delete_contest(contest_id: int, db: Session = Depends(get_db)):
+    contest = db.query(models.Contest).filter(models.Contest.id == contest_id).first()
+    if not contest:
+        raise HTTPException(status_code=404, detail="Concursul nu a fost găsit.")
+    
+    # Șterge fișierul imagine de pe disc (dacă există)
+    if contest.image_path:
+        full_path = os.path.join("app", contest.image_path)
+        if os.path.exists(full_path):
+            os.remove(full_path)
+
+    db.delete(contest)
+    db.commit()
+    return {"message": "Concursul a fost șters cu succes."}

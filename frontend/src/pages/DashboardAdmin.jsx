@@ -96,6 +96,22 @@ const DashboardAdmin = () => {
               <div className="event-info">
                 <h4 className="event-title">{contest.name}</h4>
                 <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
+                <button
+                  className="delete-button"
+                  onClick={async () => {
+                    if (confirm("Ești sigur că vrei să ștergi acest concurs?")) {
+                      try {
+                        await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
+                        setContests(contests.filter(c => c.id !== contest.id));
+                      } catch (err) {
+                        alert("Eroare la ștergerea concursului.");
+                        console.error(err);
+                      }
+                    }
+                  }}
+                >
+                  🗑️ Șterge
+                </button>
               </div>
             </li>
           ))}

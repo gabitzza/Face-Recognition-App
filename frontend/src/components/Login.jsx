@@ -32,7 +32,9 @@
         alert("Autentificare reușită!");
     
         // ✅ Redirecționăm în funcție de rol
-        if (user.role === "alergator") {
+        if(user.role === "admin") {
+          navigate("/dashboard-admin");}
+        else if (user.role === "alergator") {
           navigate("/dashboard-alergator");
         } else {
           navigate("/dashboard-fotograf");
