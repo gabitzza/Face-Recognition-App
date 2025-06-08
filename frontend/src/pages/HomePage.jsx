@@ -89,6 +89,86 @@ const ContestCarousel = ({ contests }) => {
   );
 };
 
+const PastContestsSlider = ({ contests }) => {
+  const [centerIdx, setCenterIdx] = useState(0);
+  const [direction, setDirection] = useState(null);
+
+  if (!contests.length) return null;
+
+  const showCount = 3;
+  const half = Math.floor(showCount / 2);
+
+  const handleLeft = () => {
+    setDirection('left');
+    setCenterIdx(i => (i === 0 ? contests.length - 1 : i - 1));
+  };
+
+  const handleRight = () => {
+    setDirection('right');
+    setCenterIdx(i => (i === contests.length - 1 ? 0 : i + 1));
+  };
+
+  // Pentru a afișa mereu 3 carduri, circular
+  const getOffset = idx => {
+    let offset = idx - centerIdx;
+    if (offset > contests.length / 2) offset -= contests.length;
+    if (offset < -contests.length / 2) offset += contests.length;
+    return offset;
+  };
+
+  return (
+    <div className="carousel-container">
+      <button className="carousel-btn left" onClick={handleLeft}>&lt;</button>
+      <div className="carousel-track">
+        {contests.map((contest, idx) => {
+          const offset = getOffset(idx);
+          if (Math.abs(offset) > half) return null;
+          return (
+            <div
+              key={contest.id}
+              className={
+                "carousel-card" +
+                (offset === 0 ? " center" : "") +
+                (offset === 0 && direction ? ` slide-${direction}` : "")
+              }
+              style={{
+                transform: `
+                  translateX(${offset * 330}px)
+                  scale(${offset === 0 ? 1.1 : 0.8})
+                  perspective(550px)
+                  rotateY(${offset * 2}deg)
+                  translateZ(${offset === 0 ? 0 : 80}px)
+                `,
+                zIndex: 10 - Math.abs(offset),
+                opacity: 1,
+                transition: "transform 0.5s cubic-bezier(.4,0,.2,1), opacity 0.3s"
+              }}
+            >
+              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
+              <div className="carousel-card-info">
+                <div className="carousel-card-title">{contest.name}</div>
+                <div className="carousel-card-date">{new Date(contest.date).toLocaleDateString()}</div>
+                {contest.website_url && (
+                  <a
+                    href={contest.website_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="carousel-card-link"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    Vezi site
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <button className="carousel-btn right" onClick={handleRight}>&gt;</button>
+    </div>
+  );
+};
+
 const HomePage = () => {
   const [contests, setContests] = useState([]);
   const videoRef = useRef(null);
@@ -245,17 +325,7 @@ const HomePage = () => {
       {/* EVENIMENTE ANTERIOARE */}
       <section style={{ marginTop: '4rem' }}>
         <h2 className="contests-title">Evenimente anterioare</h2>
-        <div className="event-grid">
-          {pastContests.map(contest => (
-            <div className="event-card" key={contest.id}>
-              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
-              <div className="event-info">
-                <h3 className="event-title">{contest.name}</h3>
-                <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <PastContestsSlider contests={pastContests} />
       </section>
     </div>
   );
