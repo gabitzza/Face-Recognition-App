@@ -133,10 +133,10 @@ const PastContestsSlider = ({ contests }) => {
               }
               style={{
                 transform: `
-                  translateX(${offset * 330}px)
+                  translateX(${offset * 230}px)
                   scale(${offset === 0 ? 1.1 : 0.8})
                   perspective(550px)
-                  rotateY(${offset * 2}deg)
+                  rotateY(${offset * 1}deg)
                   translateZ(${offset === 0 ? 0 : 80}px)
                 `,
                 zIndex: 10 - Math.abs(offset),
@@ -327,6 +327,29 @@ const HomePage = () => {
         <h2 className="contests-title">Evenimente anterioare</h2>
         <PastContestsSlider contests={pastContests} />
       </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-logo">PhotoMatch</div>
+          <div className="footer-links">
+            <a href="/about">Despre</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy">Confidențialitate</a>
+          </div>
+          <div className="footer-social">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><path d="M22 12c0-5.522-4.478-10-10-10S2 6.478 2 12c0 5 3.657 9.127 8.438 9.877v-6.987h-2.54v-2.89h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.632.771-1.632 1.562v1.875h2.773l-.443 2.89h-2.33v6.987C18.343 21.127 22 17 22 12z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="24" height="24" fill="#fff" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.242-1.308-3.608C2.175 15.647 2.163 15.267 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.013 7.052.072 5.775.13 4.602.385 3.635 1.352 2.668 2.319 2.413 3.492 2.355 4.77.013 8.332 0 8.741 0 12c0 3.259.013 3.668.072 4.948.058 1.278.313 2.451 1.28 3.418.967.967 2.14 1.222 3.418 1.28C8.332 23.987 8.741 24 12 24s3.668-.013 4.948-.072c1.278-.058 2.451-.313 3.418-1.28.967-.967 1.222-2.14 1.28-3.418.059-1.28.072-1.689.072-4.948 0-3.259-.013-3.668-.072-4.948-.058-1.278-.313-2.451-1.28-3.418-.967-.967-2.14-1.222-3.418-1.28C15.668.013 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          &copy; {new Date().getFullYear()} PhotoMatch. Toate drepturile rezervate.
+        </div>
+      </footer>
     </div>
   );
 };

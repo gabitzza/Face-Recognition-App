@@ -541,8 +541,6 @@ a:hover {
   overflow: hidden;
 }
 
-  
-
 .custom-middle-content {
   max-width: 700px;
   text-align: center;
@@ -561,4 +559,68 @@ a:hover {
   font-size: 1.15rem;
   font-weight: 500;
   color: rgb(255, 255, 255);
+}
+
+/* FOOTER */
+.footer {
+  background: #012a4a;
+  color: #fff;
+  padding: 2rem 0 1rem 0;
+  margin-top: 3rem;
+  font-size: 1rem;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 2rem;
+}
+
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.footer-links a {
+  color: #b3e0ff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+}
+
+.footer-social {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.footer-social a svg {
+  vertical-align: middle;
+  transition: transform 0.2s;
+}
+
+.footer-social a:hover svg {
+  transform: scale(1.15);
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #b3e0ff;
+  font-size: 0.97rem;
+  letter-spacing: 1px;
 }
