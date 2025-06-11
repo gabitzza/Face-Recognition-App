@@ -1,6 +1,6 @@
 import os
 import shutil
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException,  BackgroundTasks
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
@@ -14,7 +14,7 @@ from app.utils.face_encoder import encode_all_faces
 import unicodedata
 import re
 import json
-
+from sqlalchemy.orm import Session
 router = APIRouter()
 
 # Calea absolută către folderul 'uploads' din backend/app
@@ -151,3 +151,12 @@ def upload_photo(
     
 
     return {"message": "Foto încărcată cu succes", "photo_id": photo.id}
+
+
+@router.get("/debug-face-encoding/{photo_id}")
+def debug_encoding(photo_id: int, db: Session = Depends(get_db)):
+    photo = db.query(Photo).get(photo_id)
+    return {
+        "raw": photo.face_encoding,
+        "parsed": json.loads(photo.face_encoding) if photo.face_encoding else None
+    }
