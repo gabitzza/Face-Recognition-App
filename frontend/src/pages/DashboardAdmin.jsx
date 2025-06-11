@@ -57,7 +57,7 @@ const DashboardAdmin = () => {
   return (
     <div className="dashboard">
       <main className="content">
-        <h2 className="header" class="title">Adaugă un nou eveniment</h2>
+        <h2 className="header">Adaugă un nou eveniment</h2>
         <form className="upload-form" onSubmit={handleSubmit} encType="multipart/form-data">
           <label>Nume eveniment:</label>
           <input
@@ -77,7 +77,7 @@ const DashboardAdmin = () => {
 
           <div style={{ marginTop: "1rem" }}>
             <label>URL site oficial:</label><br />
-            <input class="custom-input"
+            <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}

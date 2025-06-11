@@ -129,6 +129,7 @@ def upload_photo(
     if encodings:
         encoding_json = json.dumps(encodings)  # listă de encoduri
         print(f"[✅] {len(encodings)} encodări salvate pentru {file.filename}")
+        
     else:
         encoding_json = None
         print(f"[⚠️] Nicio față detectată în {file.filename}")

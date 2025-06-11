@@ -80,12 +80,19 @@ const DashboardAlergator = () => {
         }
       });
 
-      setMatchResults(res.data.matches);
+      const images = res.data.matches.map(p => p); // imgPath simplu
+      setMatchResults(images);
+
+      // 🔍 DEBUG LOGURI
+      console.log("✔️ Rezultate raw din backend:", res.data?.matches);
+      console.log("🖼️ URL-uri finale construite:", images.map(p => `http://127.0.0.1:8000/uploads/${encodeURIComponent(p)}`));
     } catch (err) {
       console.error("Eroare la upload/match:", err);
       alert("Eroare la încărcarea pozei.");
     }
   };
+
+
 
   const handleSave = async (imagePath) => {
     const token = localStorage.getItem("token");
@@ -260,11 +267,13 @@ const DashboardAlergator = () => {
                 </div>
 
                 <button
+                  type="button"
                   onClick={handleUpload}
                   disabled={!selectedFile || !selectedContest}
                 >
                   Caută poze cu mine
                 </button>
+
               </form>
               <div className="dashboard-glass-card">
                 <div className="dashboard-glass-title">Tips pentru o poză bună</div>
@@ -272,13 +281,14 @@ const DashboardAlergator = () => {
                   Vrei rezultate mai bune? Iată câteva sfaturi.
                 </div>
                 <div className="dashboard-glass-list" style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
-                  <div className="dashboard-glass-tip" class="background">Folosește o poză clară, frontală.</div>
+                  <div className="dashboard-glass-tip" >Folosește o poză clară, frontală.</div>
                   <div className="dashboard-glass-tip">Evită ochelari de soare sau alte accesorii care acoperă fața.</div>
-                  <div className="dashboard-glass-tip" class="background">Evită poze de grup – imaginea ideală este doar cu tine.</div>
-                 </div>
+                  <div className="dashboard-glass-tip" >Evită poze de grup – imaginea ideală este doar cu tine.</div>
+                </div>
               </div>
             </div>
 
+            {console.log("🖼️ matchResults vizibile în render:", matchResults)}
             {matchResults.length > 0 ? (
               <section className="results">
                 <h3>Poze potrivite:</h3>
@@ -286,20 +296,22 @@ const DashboardAlergator = () => {
                   {matchResults.map((imgPath, i) => (
                     <img
                       key={i}
-                      src={`http://127.0.0.1:8000/uploads/${imgPath}`}
+                      src={`http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`}
                       alt="Poza potrivită"
                       onClick={() => {
                         setOpen(true);
                         setIndex(i);
                       }}
-                      style={{ cursor: "pointer" }}
+                      style={{ cursor: "pointer", maxWidth: "200px", margin: "10px" }}
                     />
                   ))}
                 </div>
               </section>
-            ) : selectedFile && (
-              <p className="text-muted">Nu am găsit poze potrivite pentru tine la acest concurs.</p>
+            ) : (
+              selectedFile && <p className="text-muted">Nu am găsit poze potrivite pentru tine la acest concurs.</p>
             )}
+
+
           </div>
         )}
 
@@ -362,7 +374,7 @@ const DashboardAlergator = () => {
           close={() => setOpen(false)}
           index={index}
           slides={matchResults.map((imgPath) => ({
-            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
+            src: `http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`,
           }))}
           render={{
             slideFooter: () => (

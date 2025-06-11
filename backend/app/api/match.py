@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, Form, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 import shutil
 import os
+import uuid
 from datetime import datetime
 import face_recognition
 import json
@@ -10,53 +11,66 @@ from app.models.photos import Photo
 from app.api.auth import get_current_user
 from app.models.user import User
 
+def encode_all_faces(image_path):
+    """Encode all faces in the given image file and return a list of encodings."""
+    image = face_recognition.load_image_file(image_path)
+    encodings = face_recognition.face_encodings(image)
+    return encodings
+
 
 router = APIRouter()
 
+# Define the folder where uploaded files will be stored temporarily
+UPLOAD_FOLDER = "temp_uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 @router.post("/match-photo")
-async def match_photo(
-    file: UploadFile,
+def match_photo(
+    file: UploadFile = File(...),
     contest_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
-    # 1. Salvează temporar imaginea primită
-    temp_filename = f"temp_{datetime.utcnow().timestamp()}_{file.filename}"
-    file_path = os.path.join("app/uploads/temp", temp_filename)
-    os.makedirs("app/uploads/temp", exist_ok=True)
-
+    # Salvare temporară fișier
+    ext = os.path.splitext(file.filename)[1]
+    filename = f"temp_{uuid.uuid4().hex}{ext}"
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # 2. Encodează poza trimisă de alergător
-    image = face_recognition.load_image_file(file_path)
-    encodings = face_recognition.face_encodings(image)
+    # Encode selfie
+    encodings = encode_all_faces(file_path)
+    os.remove(file_path)
 
     if not encodings:
-        os.remove(file_path)
         raise HTTPException(status_code=400, detail="Nicio față detectată în imagine.")
 
     runner_encoding = encodings[0]
 
-    # 3. Caută poze din acel concurs cu encodări salvate
-    photos = db.query(Photo).filter(Photo.contest_id == contest_id, Photo.face_encoding.isnot(None)).all()
+    # Caută poze în același concurs
+    photos = db.query(Photo).filter(Photo.contest_id == contest_id).all()
 
     matched_photos = []
+
     for photo in photos:
-        try:
-            encoding_list = json.loads(photo.face_encoding)  # listă de encodări
-            for enc in encoding_list:
-                distance = face_recognition.face_distance([enc], runner_encoding)[0]
-                if distance < 0.6:
-                    matched_photos.append(photo.image_path)
-                    break  # nu mai e nevoie să verificăm restul
-        except Exception as e:
-            print(f"❌ Eroare la comparare cu {photo.image_path}: {e}")
+        if not photo.face_encoding:
             continue
 
-    # 4. Curățăm fișierul temporar
-    os.remove(file_path)
+        try:
+            encoding_list = json.loads(photo.face_encoding)
+            for enc in encoding_list:
+                distance = face_recognition.face_distance([enc], runner_encoding)[0]
+                print(f"[🔍] {photo.image_path} → distance: {distance:.4f}")
+                if distance < 0.6:
+                    matched_photos.append(photo.image_path)
+                    break
+        except Exception as e:
+            print(f"[⚠️] Eroare la {photo.image_path}: {e}")
 
-    
+    # Log rezultate
+    print("✔️ [MATCH RESULT] Poze cu distanță < 0.6:")
+    for path in matched_photos:
+        print(f" → {path}")
+    print(f"📤 Returnez {len(matched_photos)} rezultate către frontend.")
 
     return {"matches": matched_photos}
 
