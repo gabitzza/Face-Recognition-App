@@ -3,12 +3,12 @@
 .dashboard {
   display: flex;
   height: 100vh;
-  background-color: #0f766e;
+  background-color: #01161E;
 }
 
 .sidebar {
   width: 240px;
-  background-color: #0f766e;
+  background-color: #01161E;
   color: white;
   padding: 2rem 1rem;
   display: flex;
@@ -41,12 +41,12 @@
 }
 
 .sidebar nav ul li:hover {
-  background-color: #115e59;
+  background: linear-gradient(80deg, #016FB9 60%, #49C6E5 100%);
 }
 
 .sidebar nav ul .active {
   background-color: white;
-  color: #0f766e;
+  color: #01161E;
   font-weight: 600;
 }
 
@@ -59,26 +59,76 @@
     flex: 1;
     padding: 2rem 3rem;
     margin: 1rem;
-    border-radius: 4rem;
-    background-color: #f9fafb;
+    border-radius: 1rem;
+    color: white;
+    background: url('../assets/images/login-background.jpg') center center/cover no-repeat;
     overflow-y: auto;
+}
+
+.title{
+      justify-self: center;
 }
 
 .header h2 {
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  margin-left: 5rem;
+  justify-self: center;
 }
 
+/* Glassmorphism pentru formular */
 .upload-form {
+  background: rgba(20, 30, 60, 0.65);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  border-radius: 1.7rem;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  max-width: 410px;
+  width: 100%;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  max-width: 600px;
+  align-items: stretch;
+  backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(120,180,255,0.13);
+  margin: 0 auto;
+  height: 90%;
+}
+
+.custom-input{
+      padding: 0.6rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    width: 94%;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.2s;
+    margin-bottom: 0.8rem;
+}
+.upload-form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 2.2rem;
+  color: #fff;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+}
+
+.upload-glass-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid #b3e0ff;
+  color: #fff;
+  font-size: 1.07rem;
+  padding: 0.85rem 0 0.85rem 0;
+  margin-bottom: 1.5rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.upload-glass-input:focus {
+  border-bottom: 2px solid #49C6E5;
 }
 
 .upload-form label {
@@ -92,11 +142,13 @@
   border-radius: 6px;
   font-family: 'Poppins';
   font-size: 1rem;
+  background: linear-gradient(80deg, #016FB9 60%, #49C6E5 100%);
+      margin-bottom: 1.5rem;
 }
 
 .upload-form button {
   padding: 0.75rem;
-  background-color: #0f766e;
+  background-color:#016FB9;;
   color: white;
   border: none;
   border-radius: 6px;
@@ -104,6 +156,7 @@
   cursor: pointer;
   transition: background 0.2s;
   font-size: 1rem;
+      margin-top: 1.5rem;
 }
 
 .upload-form button:disabled {
@@ -153,7 +206,7 @@
 }
 
 .custom-file-input label {
-  background-color: #0f766e;
+  background-color: #01161E;  
   color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -348,6 +401,16 @@
   background: #171717;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  padding: 1rem;
+    text-align: center;
+    background: rgba(20, 30, 60, 0.65);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+    border-radius: 1rem;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(16px);
+    font-family: 'Poppins', sans-serif;
 }
 
 .event-title {
@@ -364,10 +427,9 @@
 .upload-form label {
   font-weight: 600;
   font-size: 1rem;
-  color: #0f172a;
-  margin-bottom: 0.25rem;
+  color: #ffffff;
+  margin-bottom: 0.8rem;
   display: block;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
@@ -377,10 +439,11 @@
   padding: 0.6rem 0.75rem;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
-  width: 100%;
+  width: 94%;
   font-size: 1rem;
   font-family: 'Poppins', sans-serif;
   transition: border-color 0.2s;
+      margin-bottom: 0.8rem;
 }
 
 .upload-form input:focus {
@@ -396,7 +459,7 @@
 }
 
 .custom-file-input label {
-  background-color: #0f766e;
+  background-color:#01161E;;
   color: white;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
@@ -442,4 +505,105 @@
   display: block;
   margin: 0.5rem auto;
   width: 80%;
+}
+
+.dashboard-sidebar-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-left: 2rem;
+  flex-basis: 300px;
+}
+
+.dashboard-stats-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-stats-header {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.dashboard-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.dashboard-stats-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+}
+
+.dashboard-stats-row span {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.dashboard-glass-card {
+  background: rgba(20, 30, 60, 0.65);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  border-radius: 1rem;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  min-width: 300px;
+  max-width: 350px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  backdrop-filter: blur(16px);
+  font-family: 'Poppins', sans-serif;
+  height: 100%;
+}
+
+.dashboard-glass-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #fff;
+  text-align: left;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-glass-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard-glass-tip {
+  border-radius: 0.7rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.07rem;
+  font-weight: 500;
+  color: #e0e7ef;
+  letter-spacing: 0.2px;
+  margin-bottom: 0.5rem;
+}
+
+.background{
+    background: rgb(42 42 42 / 16%);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+    border-radius: 0.3rem;
+    padding: 1rem 2rem;
+    max-width: 350px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(120, 180, 255, 0.13);
+    font-family: 'Poppins', sans-serif;
+    height: 100%;
 }

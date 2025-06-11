@@ -74,7 +74,7 @@ const DashboardFotograf = () => {
       <h1 className="logo">FaceApp</h1>
       <nav>
         <ul>
-          <li>📷 Încarcă poze</li>
+          <li> Încarcă poze</li>
           <li className="logout" onClick={handleLogout}>
             Logout
           </li>
@@ -116,7 +116,7 @@ const DashboardFotograf = () => {
           />
         </div>
 
-        <button onClick={handleUpload}>📤 Încarcă</button>
+        <button onClick={handleUpload}>Încarcă</button>
       </div>
     </main>
   </div>

@@ -57,7 +57,7 @@ const DashboardAdmin = () => {
   return (
     <div className="dashboard">
       <main className="content">
-        <h2 className="header">Adaugă un nou eveniment</h2>
+        <h2 className="header" class="title">Adaugă un nou eveniment</h2>
         <form className="upload-form" onSubmit={handleSubmit} encType="multipart/form-data">
           <label>Nume eveniment:</label>
           <input
@@ -77,7 +77,7 @@ const DashboardAdmin = () => {
 
           <div style={{ marginTop: "1rem" }}>
             <label>URL site oficial:</label><br />
-            <input
+            <input class="custom-input"
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -168,7 +168,7 @@ const DashboardAdmin = () => {
                         }
                       }}
                     >
-                      💾 Salvează
+                       Salvează
                     </button>
                     <button onClick={() => setEditingId(null)}>❌ Anulează</button>
                   </>
@@ -185,7 +185,7 @@ const DashboardAdmin = () => {
                         setUpdatedUrl(contest.url || "");
                       }}
                     >
-                      ✏️ Editează
+                       Editează
                     </button>
 
                     <button
@@ -202,7 +202,7 @@ const DashboardAdmin = () => {
                         }
                       }}
                     >
-                      🗑️ Șterge
+                       Șterge
                     </button>
                   </>
                 )}

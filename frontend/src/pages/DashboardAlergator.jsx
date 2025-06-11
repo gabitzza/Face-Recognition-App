@@ -232,37 +232,52 @@ const DashboardAlergator = () => {
               <h2>Caută poze cu tine</h2>
             </header>
 
-            <section className="upload-form">
-              <label htmlFor="contest">Selectează evenimentul:</label>
-              <select
-                id="contest"
-                value={selectedContest}
-                onChange={(e) => setSelectedContest(e.target.value)}
-              >
-                <option value="">-- alege un eveniment --</option>
-                {contests.map((contest) => (
-                  <option key={contest.id} value={contest.id}>
-                    {contest.name}
-                  </option>
-                ))}
-              </select>
 
-              <div className="custom-file-input">
-                <label htmlFor="fileUpload">Încarcă o poză</label>
-                <input
-                  type="file"
-                  id="fileUpload"
-                  onChange={handleFileChange}
-                />
+
+            <div style={{ display: "flex", justifyContent: "center", gap: "2.5rem" }}>
+              <form className="upload-form">
+                <label htmlFor="contest">Selectează evenimentul:</label>
+                <select
+                  id="contest"
+                  value={selectedContest}
+                  onChange={(e) => setSelectedContest(e.target.value)}
+                >
+                  <option value="">-- alege un eveniment --</option>
+                  {contests.map((contest) => (
+                    <option key={contest.id} value={contest.id}>
+                      {contest.name}
+                    </option>
+                  ))}
+                </select>
+
+                <div className="custom-file-input">
+                  <label htmlFor="fileUpload">Încarcă o poză</label>
+                  <input
+                    type="file"
+                    id="fileUpload"
+                    onChange={handleFileChange}
+                  />
+                </div>
+
+                <button
+                  onClick={handleUpload}
+                  disabled={!selectedFile || !selectedContest}
+                >
+                  Caută poze cu mine
+                </button>
+              </form>
+              <div className="dashboard-glass-card">
+                <div className="dashboard-glass-title">Tips pentru o poză bună</div>
+                <div style={{ color: "#b3e0ff", marginBottom: "1.2rem", fontSize: "1rem" }}>
+                  Vrei rezultate mai bune? Iată câteva sfaturi.
+                </div>
+                <div className="dashboard-glass-list" style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+                  <div className="dashboard-glass-tip" class="background">Folosește o poză clară, frontală.</div>
+                  <div className="dashboard-glass-tip">Evită ochelari de soare sau alte accesorii care acoperă fața.</div>
+                  <div className="dashboard-glass-tip" class="background">Evită poze de grup – imaginea ideală este doar cu tine.</div>
+                 </div>
               </div>
-
-              <button
-                onClick={handleUpload}
-                disabled={!selectedFile || !selectedContest}
-              >
-                Caută poze cu mine
-              </button>
-            </section>
+            </div>
 
             {matchResults.length > 0 ? (
               <section className="results">
