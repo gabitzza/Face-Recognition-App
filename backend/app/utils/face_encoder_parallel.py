@@ -5,6 +5,7 @@ import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 from PIL import Image
+from app.utils.face_encoder_insight import encode_image_insightface
 import face_recognition
 import numpy as np
 

@@ -4,13 +4,13 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 from PIL import Image
-from face_encoder_insight import encode_image_insightface
-
+from app.utils.face_encoder_insight import encode_image_insightface
+from multiprocessing import freeze_support
 
 def save_thumbnail(original_path, size=(600, 400)):
     from PIL import Image
     import os
-
+    print(f"Se foloseste face_encoder_parallel_insight.py")
     img = Image.open(original_path).convert("RGB")
     img.thumbnail(size, Image.Resampling.LANCZOS)
 
@@ -54,7 +54,7 @@ def process_image(image_path: str):
         return os.path.basename(image_path), []
     
 
-def process_folder(folder: str, output_file: str, workers: int = os.cpu_count()):
+def process_folder(folder: str, output_file: str, workers: int = 1):
     start = time.time()
 
     images = [

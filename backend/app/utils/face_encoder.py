@@ -24,6 +24,7 @@ def encode_all_faces(image_path, max_size=(600, 600)):
     if not face_locations:
         return []
 
+    print(f"Functia encode_all_faces din face_encoder.py)")
     face_encodings = face_recognition.face_encodings(img, known_face_locations=face_locations, model="large")
     return [encoding.tolist() for encoding in face_encodings]
 
@@ -47,7 +48,7 @@ def save_encodings(image_path, encodings, output_file="encoded_images.json"):
 
     with open(output_file, "w") as f:
         json.dump(data, f, indent=4)
-
+    print(f"Functia save_encodings din face_encoder.py)")
     print(f"[OK] {len(encodings)} față/fete salvate pentru {filename}")
 
 
@@ -76,6 +77,7 @@ def process_folder(folder_path, output_file):
         save_encodings(image_path, encodings, output_file)
         total_images += 1
 
+    print(f"Functia process_folder din face_encoder.py)")
     elapsed = time.time() - start_time
     print(f"\n✅ Gata! {total_images} imagini procesate în {elapsed:.2f} secunde.")
 

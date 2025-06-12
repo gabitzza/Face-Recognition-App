@@ -7,6 +7,7 @@ import "yet-another-react-lightbox/styles.css";
 import UpcomingContestsCalendar from "../components/UpcomingContestsCalendar";
 import '../assets/fonts/fonts.css';
 
+
 const DashboardAlergator = () => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
@@ -22,6 +23,17 @@ const DashboardAlergator = () => {
   const [favoriteOpen, setFavoriteOpen] = useState(false);
   const [favoriteIndex, setFavoriteIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(20);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+
+  const openLightbox = (imagePath) => {
+    setSelectedImage(imagePath);
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+  };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -310,20 +322,14 @@ const DashboardAlergator = () => {
 
             {console.log("🖼️ matchResults vizibile în render:", matchResults)}
             {matchResults.length > 0 ? (
-              <section className="results">
-                <h3>Poze potrivite:</h3>
-                <div className="gallery">
-                  {matchResults.slice(0, visibleCount).map((imgPath, i) => (
+              <section>
+                <div>
+                  {console.log("matchResults[0]:", matchResults[0])}
+                  {matchResults.slice(0, visibleCount).map((photo, index) => (
                     <img
-                      key={i}
-                      src={getThumbnailUrl(imgPath)}
-                      loading="lazy"
-                      alt="Poza potrivită"
-                      onClick={() => {
-                        setOpen(true);
-                        setIndex(i);
-                      }}
-                      style={{ cursor: "pointer", width: "200px", margin: "10px" }}
+                      key={index}
+                      src={`http://127.0.0.1:8000/uploads/${photo.thumb.split('/').map(encodeURIComponent).join('/')}`}
+                      onClick={() => openLightbox(photo.image)}
                     />
                   ))}
                 </div>
@@ -394,9 +400,9 @@ const DashboardAlergator = () => {
           open={open}
           close={() => setOpen(false)}
           index={index}
-          slides={matchResults.map((imgPath) => ({
-            src: `http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`,
-          }))}
+          slides={matchResults.map((photo, index) => (
+            <img key={index} src={`http://127.0.0.1:8000/uploads/${photo.image}`} alt="matched" />
+          ))}
           render={{
             slideFooter: () => (
               <div className="lightbox-actions">
@@ -466,7 +472,14 @@ const DashboardAlergator = () => {
             )
           }}
         />
-
+        {selectedImage && (
+          <div className="lightbox-overlay" onClick={closeLightbox}>
+            <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+              <img src={`http://127.0.0.1:8000/uploads/${selectedImage}`} alt="Poza mare" />
+              <button onClick={closeLightbox}>Închide</button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

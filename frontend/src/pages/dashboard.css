@@ -607,3 +607,28 @@
     font-family: 'Poppins', sans-serif;
     height: 100%;
 }
+
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lightbox-content img {
+  max-height: 80vh;
+  max-width: 90vw;
+  border-radius: 12px;
+}
+
+.lightbox-content button {
+  margin-top: 20px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+}

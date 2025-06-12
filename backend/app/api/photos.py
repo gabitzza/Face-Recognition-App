@@ -15,6 +15,8 @@ import unicodedata
 import re
 import json
 from sqlalchemy.orm import Session
+from app.utils.face_encoder_parallel_insight import process_folder
+from fastapi import BackgroundTasks
 router = APIRouter()
 
 # Calea absolută către folderul 'uploads' din backend/app
@@ -55,103 +57,107 @@ def get_all_contests(db: Session = Depends(get_db)):
 
 @router.post("/upload-photo")
 def upload_photo(
-    
+    background_tasks: BackgroundTasks,  # ✅ adăugat
     file: UploadFile = File(...),
     contest_id: int = Form(...),
-    album_title: str = Form(...),  # Adăugăm album_title
-    contest_name: str = Form(...),  # <-- aici
+    album_title: str = Form(...),
+    contest_name: str = Form(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
- 
 ):
-
-
-    print(f"Album title received: '{album_title}'")  # Log titlu album
-    print(f"File received: {file.filename}")  # Log fișie
-    if current_user.role != "fotograf":
-        raise HTTPException(status_code=403, detail="Doar fotografii pot încărca poze")
-    
-    if not album_title:
-        raise HTTPException(status_code=400, detail="Titlul albumului nu poate fi gol.")
-
-    print(f"Album title received: '{album_title}'")  # Log titlu album
-    print(f"File received: {file.filename}")  # Log fișierul
-
-   # 1. Verificăm rolul
     if current_user.role != "fotograf":
         raise HTTPException(status_code=403, detail="Doar fotografii pot încărca poze")
 
-    # 2. Verificăm titlul albumului
     if not album_title:
         raise HTTPException(status_code=400, detail="Titlul albumului nu poate fi gol.")
 
-    # 3. Calculăm hash-ul ÎNAINTE să citim fișierul complet
     file_hash = calculate_file_hash(file.file)
 
-    # 4. Verificăm în DB dacă fișierul există deja
     existing_photo = db.query(Photo).filter_by(
         photo_hash=file_hash,
         contest_id=contest_id,
         photographer_id=current_user.id
     ).first()
-
     if existing_photo:
         raise HTTPException(status_code=409, detail="Această poză a fost deja încărcată.")
 
-
     contest = db.query(Contest).filter_by(id=contest_id).first()
-    if contest:
-        print(f"🎯 Concurs găsit: ID={contest.id}, Nume='{contest.name}'")
-    else:
-        print(f"❌ Nu am găsit concursul cu ID {contest_id}")
-    
-    contest_id = int(contest_id)
-    contest_name = contest.name  
- #   contest_name = contest.name if contest and contest.name else f"contest_{contest_id}"
+    if not contest:
+        raise HTTPException(status_code=404, detail="Concursul nu a fost găsit.")
 
-    contest_name = sanitize_filename(contest.name)
-    final_album_title = f"{current_user.full_name.strip()} - {album_title.strip()}"
-    
-    final_album_title = f"{current_user.full_name} - {album_title}".strip()
-    album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name, final_album_title)
+    contest_name_clean = sanitize_filename(contest.name)
+    album_title_clean = album_title.strip()
+    final_album_title = f"{current_user.full_name} - {album_title_clean}".strip()
 
-    if not os.path.exists(album_folder_path):
-        os.makedirs(album_folder_path)
+    album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name_clean, final_album_title)
+    os.makedirs(album_folder_path, exist_ok=True)
 
     file_path = os.path.join(album_folder_path, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # 6. Salvăm în baza de date
-    print(f" Nume concurs='{contest.name}'")
-
-    encodings = encode_all_faces(file_path)
-    if encodings:
-        encoding_json = json.dumps(encodings)  # listă de encoduri
-        print(f"[✅] {len(encodings)} encodări salvate pentru {file.filename}")
-        
-    else:
-        encoding_json = None
-        print(f"[⚠️] Nicio față detectată în {file.filename}")
-
-
     photo = Photo(
-        image_path=f"{contest_name}/{final_album_title}/{file.filename}",
+        image_path=f"{contest_name_clean}/{final_album_title}/{file.filename}",
         contest_id=contest_id,
         photographer_id=current_user.id,
         uploaded_at=datetime.utcnow(),
-        photo_hash=file_hash, # 👈 Adăugat corect aici
-        face_encoding=encoding_json
+        photo_hash=file_hash,
+        face_encoding=None
     )
-
     db.add(photo)
     db.commit()
     db.refresh(photo)
 
-    
+    # === Declanșează procesarea în fundal ===
+    output_filename = f"encoded_{contest_name_clean}_{current_user.full_name.replace(' ', '')}-{album_title_clean.replace(' ', '')}.json"
+    output_path = os.path.join("app", "encodings", output_filename)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
-    return {"message": "Foto încărcată cu succes", "photo_id": photo.id}
+    background_tasks.add_task(process_folder, album_folder_path, output_path)
 
+    return {
+        "message": "Foto încărcată cu succes",
+        "photo_id": photo.id,
+        "encoding_scheduled": True
+    }
+
+
+@router.post("/process-album")
+def process_album(
+    contest_id: int = Form(...),
+    album_title: str = Form(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from app.utils.face_encoder_parallel_insight import process_folder
+
+    if current_user.role != "fotograf":
+        raise HTTPException(status_code=403, detail="Doar fotografii pot procesa albume.")
+
+    contest = db.query(Contest).filter_by(id=contest_id).first()
+    if not contest:
+        raise HTTPException(status_code=404, detail="Concursul nu există.")
+
+    contest_name = sanitize_filename(contest.name)
+    album_title_clean = album_title.strip()
+    final_album_title = f"{current_user.full_name} - {album_title_clean}".strip()
+    album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name, final_album_title)
+
+    if not os.path.exists(album_folder_path):
+        raise HTTPException(status_code=404, detail="Folderul nu există (pozele nu sunt încărcate complet?)")
+
+    output_filename = f"encoded_{contest_name}_{current_user.full_name.replace(' ', '')}-{album_title_clean.replace(' ', '')}.json"
+    output_path = os.path.join("app", "encodings", output_filename)
+
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    # 🔁 Procesare paralelă + thumbnails
+    process_folder(album_folder_path, output_path)
+
+    return {
+        "message": f"Album procesat cu succes",
+        "encoded_file": output_filename
+    }
 
 @router.get("/debug-face-encoding/{photo_id}")
 def debug_encoding(photo_id: int, db: Session = Depends(get_db)):
