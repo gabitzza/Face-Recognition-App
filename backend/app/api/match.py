@@ -47,27 +47,22 @@ def match_photo(
     runner_encoding = encodings[0]
 
     # Caută poze în același concurs
-    photos = db.query(Photo).filter(Photo.contest_id == contest_id).all()
+    with open("app/utils/encoded_images.json", "r", encoding="utf-8") as f:
+        encoded_data = json.load(f)
 
     matched_photos = []
 
-    for photo in photos:
-        if not photo.face_encoding:
-            continue
+    for filename, enc_list in encoded_data.items():
+        for enc in enc_list:
+            distance = face_recognition.face_distance([enc], runner_encoding)[0]
+            print(f"[🔍] {filename} → distance: {distance:.4f}")
+            if distance < 0.53:
+                matched_photos.append(f"Predeal_Forest_Run/fotograf - test/{filename}")
+                break
 
-        try:
-            encoding_list = json.loads(photo.face_encoding)
-            for enc in encoding_list:
-                distance = face_recognition.face_distance([enc], runner_encoding)[0]
-                print(f"[🔍] {photo.image_path} → distance: {distance:.4f}")
-                if distance < 0.6:
-                    matched_photos.append(photo.image_path)
-                    break
-        except Exception as e:
-            print(f"[⚠️] Eroare la {photo.image_path}: {e}")
 
     # Log rezultate
-    print("✔️ [MATCH RESULT] Poze cu distanță < 0.6:")
+    print("✔️ [MATCH RESULT] Poze cu distanță <:")
     for path in matched_photos:
         print(f" → {path}")
     print(f"📤 Returnez {len(matched_photos)} rezultate către frontend.")
