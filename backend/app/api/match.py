@@ -4,18 +4,14 @@ import shutil
 import os
 import uuid
 from datetime import datetime
-import face_recognition
+from app.utils.face_encoder_insight import encode_image_insightface
+from app.utils.face_matcher_insight import cosine_similarity
 import json
 from app.core.database import get_db
 from app.models.photos import Photo
 from app.api.auth import get_current_user
 from app.models.user import User
 
-def encode_all_faces(image_path):
-    """Encode all faces in the given image file and return a list of encodings."""
-    image = face_recognition.load_image_file(image_path)
-    encodings = face_recognition.face_encodings(image)
-    return encodings
 
 
 router = APIRouter()
@@ -25,20 +21,24 @@ UPLOAD_FOLDER = "temp_uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @router.post("/match-photo")
-def match_photo(
-    file: UploadFile = File(...),
+async def match_photo(
+    file: UploadFile,
     contest_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
-    # Salvare temporară fișier
-    ext = os.path.splitext(file.filename)[1]
-    filename = f"temp_{uuid.uuid4().hex}{ext}"
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    import os, shutil, json
+    from datetime import datetime
+
+    # Salvează temporar imaginea selfie
+    temp_filename = f"temp_{datetime.utcnow().timestamp()}_{file.filename}"
+    file_path = os.path.join("app/uploads/temp", temp_filename)
+    os.makedirs("app/uploads/temp", exist_ok=True)
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Encode selfie
-    encodings = encode_all_faces(file_path)
+    # Encode selfie (folosind InsightFace)
+    encodings = encode_image_insightface(file_path)
     os.remove(file_path)
 
     if not encodings:
@@ -46,27 +46,20 @@ def match_photo(
 
     runner_encoding = encodings[0]
 
-    # Caută poze în același concurs
-    with open("app/utils/encoded_images.json", "r", encoding="utf-8") as f:
-        encoded_data = json.load(f)
+    # Încărcăm embeddings deja salvate
+    with open("app/utils/encoded_orange.json", "r", encoding="utf-8") as f:
+        all_data = json.load(f)
 
     matched_photos = []
-
-    for filename, enc_list in encoded_data.items():
-        for enc in enc_list:
-            distance = face_recognition.face_distance([enc], runner_encoding)[0]
-            print(f"[🔍] {filename} → distance: {distance:.4f}")
-            if distance < 0.53:
-                matched_photos.append(f"Predeal_Forest_Run/fotograf - test/{filename}")
+    for filename, face_list in all_data.items():
+        for known_face in face_list:
+            similarity = cosine_similarity(runner_encoding, known_face)
+            print(f"[🔍] {filename} → similarity: {similarity:.4f}")
+            if similarity > 0.5:  # poți ajusta threshold-ul (max 1.0)
+                matched_photos.append(f"Predeal_Forest_Run/portocaliu/{filename}")
                 break
 
-
-    # Log rezultate
-    print("✔️ [MATCH RESULT] Poze cu distanță <:")
-    for path in matched_photos:
-        print(f" → {path}")
-    print(f"📤 Returnez {len(matched_photos)} rezultate către frontend.")
-
+    print(f"✔️ Match-uri găsite: {len(matched_photos)}")
     return {"matches": matched_photos}
 
 

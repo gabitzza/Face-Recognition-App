@@ -21,7 +21,19 @@ const DashboardAlergator = () => {
   const [favoritePhotos, setFavoritePhotos] = useState([]);
   const [favoriteOpen, setFavoriteOpen] = useState(false);
   const [favoriteIndex, setFavoriteIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(20);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+      if (nearBottom) {
+        setVisibleCount((prev) => prev + 10);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
 
   useEffect(() => {
@@ -56,6 +68,14 @@ const DashboardAlergator = () => {
     }
   }, [activeTab]);
 
+  const getThumbnailUrl = (imgPath) => {
+    const parts = imgPath.split('/');
+    if (parts.length >= 2) {
+      const [event, ...rest] = parts;
+      return `http://127.0.0.1:8000/uploads/${event}/thumbs/${rest.join('/')}`;
+    }
+    return `http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`;
+  };
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -293,16 +313,17 @@ const DashboardAlergator = () => {
               <section className="results">
                 <h3>Poze potrivite:</h3>
                 <div className="gallery">
-                  {matchResults.map((imgPath, i) => (
+                  {matchResults.slice(0, visibleCount).map((imgPath, i) => (
                     <img
                       key={i}
-                      src={`http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`}
+                      src={getThumbnailUrl(imgPath)}
+                      loading="lazy"
                       alt="Poza potrivită"
                       onClick={() => {
                         setOpen(true);
                         setIndex(i);
                       }}
-                      style={{ cursor: "pointer", maxWidth: "200px", margin: "10px" }}
+                      style={{ cursor: "pointer", width: "200px", margin: "10px" }}
                     />
                   ))}
                 </div>
@@ -323,7 +344,7 @@ const DashboardAlergator = () => {
                 {favoritePhotos.map((imgPath, index) => (
                   <img
                     key={index}
-                    src={`http://127.0.0.1:8000/uploads/${imgPath}`}
+                    src={getThumbnailUrl(imgPath)}
                     alt="Poza favorită"
                     style={{ cursor: "pointer" }}
                     onClick={() => {
