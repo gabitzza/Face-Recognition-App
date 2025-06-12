@@ -477,7 +477,7 @@ const DashboardAlergator = () => {
               </div>
             )
           }}
-        />
+        />  
       </main>
     </div>
   );

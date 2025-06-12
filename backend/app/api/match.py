@@ -139,15 +139,29 @@ def get_favorite_photos(
         ]
     }
 
-@router.get("/favorites")
-def get_favorite_photos(
+@router.post("/add-to-favorites")
+def add_to_favorites(
+    data: dict,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    image_path = data.get("image_path")
+    if not image_path:
+        raise HTTPException(status_code=400, detail="Path invalid")
+
+    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
+    if not photo:
+        raise HTTPException(status_code=404, detail="Poza nu există")
+
     user = db.query(User).filter(User.id == current_user.id).first()
 
-    favorites = user.favorite_photos  # relație definită în User model
-    return {"favorites": [photo.image_path for photo in favorites]}
+    if user in photo.favorited_by:
+        raise HTTPException(status_code=409, detail="Poza este deja la favorite")
+
+    photo.favorited_by.append(user)
+    db.commit()
+    return {"message": "Poza adăugată la favorite"}
+
 
 
 @router.delete("/remove-from-favorites")
