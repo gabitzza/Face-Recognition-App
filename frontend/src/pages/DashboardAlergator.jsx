@@ -329,7 +329,12 @@ const DashboardAlergator = () => {
                     <img
                       key={index}
                       src={`http://127.0.0.1:8000/uploads/${photo.thumb.split('/').map(encodeURIComponent).join('/')}`}
-                      onClick={() => openLightbox(photo.image)}
+                      alt={`Poza ${index}`}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setOpen(true);
+                        setIndex(index);
+                      }}
                     />
                   ))}
                 </div>
@@ -400,9 +405,10 @@ const DashboardAlergator = () => {
           open={open}
           close={() => setOpen(false)}
           index={index}
-          slides={matchResults.map((photo, index) => (
-            <img key={index} src={`http://127.0.0.1:8000/uploads/${photo.image}`} alt="matched" />
-          ))}
+          slides={matchResults.map((photo) => ({
+            src: `http://127.0.0.1:8000/uploads/${photo.image}`,
+          }))}
+
           render={{
             slideFooter: () => (
               <div className="lightbox-actions">
@@ -472,14 +478,6 @@ const DashboardAlergator = () => {
             )
           }}
         />
-        {selectedImage && (
-          <div className="lightbox-overlay" onClick={closeLightbox}>
-            <div className="lightbox-content" onClick={e => e.stopPropagation()}>
-              <img src={`http://127.0.0.1:8000/uploads/${selectedImage}`} alt="Poza mare" />
-              <button onClick={closeLightbox}>Închide</button>
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );
