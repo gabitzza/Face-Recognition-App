@@ -69,12 +69,20 @@
       justify-self: center;
 }
 
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .header h2 {
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
   margin-left: 5rem;
   justify-self: center;
+  width: 100%;
+  text-align: center;
 }
 
 /* Glassmorphism pentru formular */
@@ -446,7 +454,40 @@
       margin-bottom: 0.8rem;
 }
 
-.upload-form input:focus {
+.upload-form input[type="url"] {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 94%;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s;
+  margin-bottom: 0.8rem;
+  background: transparent;
+  color: #fff;
+}
+
+.upload-form input[type="url"]:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 1px #0f766e50;
+}
+
+/* Pentru input[type="text"] din .event-info (editare concurs) să fie la fel ca input[type="url"] */
+.event-info input[type="text"] {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 94%;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s;
+  margin-bottom: 0.8rem;
+  background: transparent;
+  color: #fff;
+}
+
+.event-info input[type="text"]:focus {
   outline: none;
   border-color: #0f766e;
   box-shadow: 0 0 0 1px #0f766e50;
@@ -488,7 +529,7 @@
 .delete-button {
   margin-top: 0.5rem;
   padding: 0.4rem 0.8rem;
-  background-color: #dc2626;
+  background-color: #000000;
   color: white;
   border: none;
   border-radius: 6px;
@@ -505,6 +546,67 @@
   display: block;
   margin: 0.5rem auto;
   width: 80%;
+}
+
+/* Pentru toate inputurile și butoanele din .event-info (editare concurs) să fie la fel de moderne ca cele din upload-form */
+.event-info input[type="text"],
+.event-info input[type="date"],
+.event-info input[type="url"],
+.event-info input[type="file"] {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  width: 94%;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s;
+  margin-bottom: 0.8rem;
+  background: transparent;
+  color: #fff;
+}
+
+.event-info input[type="text"]:focus,
+.event-info input[type="date"]:focus,
+.event-info input[type="url"]:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 1px #0f766e50;
+}
+
+.event-info input[type="file"] {
+  background: transparent;
+  color: #fff;
+}
+
+.event-info label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.8rem;
+  display: block;
+  letter-spacing: 0.5px;
+}
+
+.event-info button {
+  padding: 0.75rem;
+  background-color: #016FB9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.event-info button:hover {
+  background-color: #115e59;
 }
 
 .dashboard-sidebar-right {
@@ -631,4 +733,36 @@
   margin-top: 20px;
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
+}
+
+/* Stil modern pentru butonul de "choose file" din .event-info (editare concurs) */
+.event-info .custom-file-input label {
+  background: linear-gradient(90deg, #016FB9 60%, #49C6E5 100%);
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-block;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  font-family: 'Poppins', sans-serif;
+}
+
+.event-info .custom-file-input label:hover {
+  background: linear-gradient(90deg, #49C6E5 60%, #016FB9 100%);
+}
+
+.event-info .custom-file-input input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }

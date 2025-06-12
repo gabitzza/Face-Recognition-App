@@ -8,6 +8,7 @@ import UpcomingContestsCalendar from "../components/UpcomingContestsCalendar";
 import '../assets/fonts/fonts.css';
 
 
+
 const DashboardAlergator = () => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
@@ -162,6 +163,7 @@ const DashboardAlergator = () => {
       alert("Trebuie să fii logat.");
       return;
     }
+     console.log("📦 Trimitem doar image_path:", imagePath);
 
     // ✅ verificare locală dacă poza e deja în lista de favorite
     if (favoritePhotos.includes(imagePath)) {
@@ -171,10 +173,11 @@ const DashboardAlergator = () => {
 
     try {
       await axios.post("http://127.0.0.1:8000/add-to-favorites", {
-        image_path: imagePath
+        image_path: imagePath, // nu imagePath.image!
       }, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         }
       });
       alert("⭐ Adăugat la favorite!");
@@ -421,7 +424,7 @@ const DashboardAlergator = () => {
 
                 <button
                   className="add-to-favorite"
-                  onClick={() => handleAddToFavorites(matchResults[index])}
+                  onClick={() => handleAddToFavorites(matchResults[index].image)}
                 >
                   🤍 Adaugă la favorite
                 </button>
@@ -477,7 +480,7 @@ const DashboardAlergator = () => {
               </div>
             )
           }}
-        />  
+        />
       </main>
     </div>
   );

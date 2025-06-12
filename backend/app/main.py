@@ -14,6 +14,13 @@ import os
 
 app = FastAPI()
 
+@app.on_event("startup")
+async def list_routes_on_startup():
+    from fastapi.routing import APIRoute
+    print("\n📋 RUTE ACTIVE:")
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            print(f"{route.path} [{', '.join(route.methods)}]")
 
 #  CORS Middleware – trebuie pus ÎNAINTE de rute
 app.add_middleware(
@@ -28,13 +35,12 @@ app.add_middleware(
 Base.metadata.create_all(bind=engine)
 
 # ✅ Înregistrăm rutele API
-app.include_router(auth.router, tags=["Autentificare"])
+app.include_router(auth.router, prefix="/auth", tags=["Autentificare"])
 app.include_router(photos.router)
 app.include_router(gallery.router, tags=["Galerie"]) 
 app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
 app.include_router(match.router)
 app.include_router(contest.router)
-app.include_router(gallery.router)
 
 
 #  Middleware pentru logare requesturi

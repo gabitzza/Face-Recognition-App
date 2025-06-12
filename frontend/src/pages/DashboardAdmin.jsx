@@ -8,20 +8,39 @@ const DashboardAdmin = () => {
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
   const [imageFile, setImageFile] = useState(null);
-  const [contests, setContests] = useState([]); const [editingId, setEditingId] = useState(null);
+  const [contests, setContests] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [updatedName, setUpdatedName] = useState("");
   const [updatedDate, setUpdatedDate] = useState("");
   const [newImage, setNewImage] = useState(null);
   const [url, setUrl] = useState("");
   const [updatedUrl, setUpdatedUrl] = useState("");
-
-
+  const [pending, setPending] = useState([]);
+  const [activeTab, setActiveTab] = useState("add-contest");
 
   useEffect(() => {
     axios.get("http://127.0.0.1:8000/contests")
       .then(res => setContests(res.data))
       .catch(err => console.error("Eroare la preluare concursuri:", err));
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios.get("http://127.0.0.1:8000/auth/pending-photographers", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setPending(res.data))
+      .catch(err => console.error("Eroare la preluare fotografi neaprobați:", err));
+  }, []);
+
+  const handleApprove = (id) => {
+    const token = localStorage.getItem("token");
+    axios.patch(`http://127.0.0.1:8000/auth/approve-photographer/${id}`, null, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(() => setPending(pending.filter(p => p.id !== id)))
+      .catch(err => console.error("Eroare la aprobare:", err));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,161 +75,216 @@ const DashboardAdmin = () => {
 
   return (
     <div className="dashboard">
-      <main className="content">
-        <h2 className="header">Adaugă un nou eveniment</h2>
-        <form className="upload-form" onSubmit={handleSubmit} encType="multipart/form-data">
-          <label>Nume eveniment:</label>
-          <input
-            type="text"
-            value={name}
-            required
-            onChange={(e) => setName(e.target.value)}
-          />
-
-          <label>Data evenimentului:</label>
-          <input
-            type="date"
-            value={date}
-            required
-            onChange={(e) => setDate(e.target.value)}
-          />
-
-          <div style={{ marginTop: "1rem" }}>
-            <label>URL site oficial:</label><br />
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://exemplu.ro"
-            />
-          </div>
-
-
-          <label>Imagine afiș:</label>
-          <div className="custom-file-input">
-            <label htmlFor="fileUpload">Alege imaginea afișului</label>
-            <input
-              id="fileUpload"
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImageFile(e.target.files[0])}
-            />
-          </div>
-
-          <button type="submit">Adaugă eveniment</button>
-        </form>
-
-        <hr style={{ margin: "2rem 0" }} />
-
-        <h3>Evenimente existente:</h3>
-        <ul className="gallery">
-          {contests.map((contest) => (
-            <li key={contest.id}>
-              {contest.image_path && (
-                <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt="afis" />
-              )}
-
-              <div className="event-info">
-                {editingId === contest.id ? (
-                  <>
-                    <input
-                      type="text"
-                      value={updatedName}
-                      onChange={(e) => setUpdatedName(e.target.value)}
-                      placeholder="Nume concurs"
-                    />
-                    <input
-                      type="date"
-                      value={updatedDate}
-                      onChange={(e) => setUpdatedDate(e.target.value)}
-                    />
-                    <div>
-                      <label>URL site oficial:</label><br />
-                      <input
-                        type="url"
-                        value={updatedUrl}
-                        onChange={(e) => setUpdatedUrl(e.target.value)}
-                        placeholder="https://exemplu.ro"
-                      />
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setNewImage(e.target.files[0])}
-                    />
-
-
-
-                    <button
-                      onClick={async () => {
-                        const formData = new FormData();
-                        formData.append("name", updatedName);
-                        formData.append("date", updatedDate);
-                        formData.append("url", updatedUrl);
-                        if (newImage) {
-                          formData.append("image", newImage);
-                        }
-
-                        try {
-                          await axios.put(`http://127.0.0.1:8000/contests/${contest.id}`, formData, {
-                            headers: { "Content-Type": "multipart/form-data" },
-                          });
-
-                          const refreshed = await axios.get("http://127.0.0.1:8000/contests");
-                          setContests(refreshed.data);
-                          setEditingId(null);
-                          setUpdatedName("");
-                          setUpdatedDate("");
-                          setNewImage(null);
-                        } catch (err) {
-                          alert("Eroare la actualizare.");
-                          console.error(err);
-                        }
-                      }}
-                    >
-                       Salvează
-                    </button>
-                    <button onClick={() => setEditingId(null)}>❌ Anulează</button>
-                  </>
-                ) : (
-                  <>
-                    <h4 className="event-title">{contest.name}</h4>
-                    <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
-
-                    <button
-                      onClick={() => {
-                        setEditingId(contest.id);
-                        setUpdatedName(contest.name);
-                        setUpdatedDate(contest.date.slice(0, 10));
-                        setUpdatedUrl(contest.url || "");
-                      }}
-                    >
-                       Editează
-                    </button>
-
-                    <button
-                      className="delete-button"
-                      onClick={async () => {
-                        if (confirm("Ești sigur că vrei să ștergi acest concurs?")) {
-                          try {
-                            await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
-                            setContests(contests.filter(c => c.id !== contest.id));
-                          } catch (err) {
-                            alert("Eroare la ștergerea concursului.");
-                            console.error(err);
-                          }
-                        }
-                      }}
-                    >
-                       Șterge
-                    </button>
-                  </>
-                )}
-              </div>
+      <aside className="sidebar">
+        <h1 className="logo">FaceApp Admin</h1>
+        <nav>
+          <ul>
+            <li
+              className={activeTab === "add-contest" ? "active" : ""}
+              onClick={() => setActiveTab("add-contest")}
+            >
+              ➕ Adaugă concursuri
             </li>
+            <li
+              className={activeTab === "existing-contests" ? "active" : ""}
+              onClick={() => setActiveTab("existing-contests")}
+            >
+              📅 Concursuri existente
+            </li>
+            <li
+              className={activeTab === "approve-accounts" ? "active" : ""}
+              onClick={() => setActiveTab("approve-accounts")}
+            >
+              ✅ Aprobă conturi
+            </li>
+            <li
+              className="logout"
+              onClick={() => {
+                
+                localStorage.removeItem("token");
+                window.location.href = "/login";
+              }}
+            >
+              <span style={{ marginRight: 6 }}>🚪</span> Logout
+            </li>
+          </ul>
+        </nav>
+      </aside>
 
-          ))}
-        </ul>
+      <main className="content">
+        {activeTab === "add-contest" && (
+          <section>
+            <h2 className="header">Adaugă un nou concurs</h2>
+            <form className="upload-form" onSubmit={handleSubmit} encType="multipart/form-data">
+              <label>Nume eveniment:</label>
+              <input
+                type="text"
+                value={name}
+                required
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <label>Data evenimentului:</label>
+              <input
+                type="date"
+                value={date}
+                required
+                onChange={(e) => setDate(e.target.value)}
+              />
+
+              <div style={{ marginTop: "1rem" }}>
+                <label>URL site oficial:</label><br />
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://exemplu.ro"
+                />
+              </div>
+
+              <label>Imagine afiș:</label>
+              <div className="custom-file-input">
+                <label htmlFor="fileUpload">Alege imaginea afișului</label>
+                <input
+                  id="fileUpload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImageFile(e.target.files[0])}
+                />
+              </div>
+
+              <button type="submit">Adaugă eveniment</button>
+            </form>
+          </section>
+        )}
+
+        {activeTab === "existing-contests" && (
+          <section>
+            <h2 className="header">Concursuri existente</h2>
+            <ul className="gallery">
+              {contests.map((contest) => (
+                <li key={contest.id}>
+                  {contest.image_path && (
+                    <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt="afis" />
+                  )}
+
+                  <div className="event-info">
+                    {editingId === contest.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={updatedName}
+                          onChange={(e) => setUpdatedName(e.target.value)}
+                          placeholder="Nume concurs"
+                        />
+                        <input
+                          type="date"
+                          value={updatedDate}
+                          onChange={(e) => setUpdatedDate(e.target.value)}
+                        />
+                        <div>
+                          <label>URL site oficial:</label><br />
+                          <input
+                            type="url"
+                            value={updatedUrl}
+                            onChange={(e) => setUpdatedUrl(e.target.value)}
+                            placeholder="https://exemplu.ro"
+                          />
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setNewImage(e.target.files[0])}
+                        />
+
+                        <button
+                          onClick={async () => {
+                            const formData = new FormData();
+                            formData.append("name", updatedName);
+                            formData.append("date", updatedDate);
+                            formData.append("url", updatedUrl);
+                            if (newImage) {
+                              formData.append("image", newImage);
+                            }
+
+                            try {
+                              await axios.put(`http://127.0.0.1:8000/contests/${contest.id}`, formData, {
+                                headers: { "Content-Type": "multipart/form-data" },
+                              });
+
+                              const refreshed = await axios.get("http://127.0.0.1:8000/contests");
+                              setContests(refreshed.data);
+                              setEditingId(null);
+                              setUpdatedName("");
+                              setUpdatedDate("");
+                              setNewImage(null);
+                            } catch (err) {
+                              alert("Eroare la actualizare.");
+                              console.error(err);
+                            }
+                          }}
+                        >
+                          Salvează
+                        </button>
+                        <button onClick={() => setEditingId(null)}>❌ Anulează</button>
+                      </>
+                    ) : (
+                      <>
+                        <h4 className="event-title">{contest.name}</h4>
+                        <p className="event-date">{new Date(contest.date).toLocaleDateString()}</p>
+
+                        <button
+                          onClick={() => {
+                            setEditingId(contest.id);
+                            setUpdatedName(contest.name);
+                            setUpdatedDate(contest.date.slice(0, 10));
+                            setUpdatedUrl(contest.url || "");
+                          }}
+                        >
+                          Editează
+                        </button>
+
+                        <button
+                          className="delete-button"
+                          onClick={async () => {
+                            if (window.confirm("Ești sigur că vrei să ștergi acest concurs?")) {
+                              try {
+                                await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
+                                setContests(contests.filter(c => c.id !== contest.id));
+                              } catch (err) {
+                                alert("Eroare la ștergerea concursului.");
+                                console.error(err);
+                              }
+                            }
+                          }}
+                        >
+                          Șterge
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <hr style={{ margin: "2rem 0" }} />
+          </section>
+        )}
+
+        {activeTab === "approve-accounts" && (
+          <section>
+            <h2 className="header">Aprobă conturi noi</h2>
+            {pending.length === 0 ? (
+              <p>Nu există cereri noi.</p>
+            ) : (
+              pending.map(p => (
+                <div key={p.id} className="pending-user">
+                  <p><strong>{p.full_name}</strong> - {p.email}</p>
+                  <button onClick={() => handleApprove(p.id)}>Aprobă</button>
+                </div>
+              ))
+            )}
+          </section>
+        )}
       </main>
     </div>
   );

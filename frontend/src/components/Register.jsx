@@ -26,7 +26,7 @@ function Register() {
       return;
     }
     try {
-      await axios.post("http://127.0.0.1:8000/register", formData, {
+      await axios.post("http://127.0.0.1:8000/auth/register", formData, {
         headers: { "Content-Type": "application/json" }
       });
       alert("Cont creat cu succes! ✅");

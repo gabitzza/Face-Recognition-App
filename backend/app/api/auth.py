@@ -14,7 +14,7 @@ SECRET_KEY = "supersecretkey"  # 🔒 schimbă în producție
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-router = APIRouter()    
+router = APIRouter() 
 
 # Configurare pentru hash-ul parolei
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -45,6 +45,7 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 @router.post("/register", response_model=UserOut)
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     print("✅ A fost apelată ruta /register")
+    is_approved = False if user.role == "fotograf" else True
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -53,7 +54,8 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
         full_name=user.full_name,
         email=user.email,
         password_hash=hash_password(user.password),
-        role=user.role
+        role=user.role,
+        is_approved=is_approved
     )
     db.add(new_user)
     db.commit()
@@ -65,6 +67,8 @@ def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == login_data.email).first()
     if not user or not pwd_context.verify(login_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Email sau parolă greșită")
+    if user.role == "fotograf" and not user.is_approved:
+        raise HTTPException(status_code=403, detail="Contul tău nu a fost încă aprobat de administrator.")
 
     token_data = {
         "sub": str(user.id),
@@ -105,3 +109,25 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     return user
+
+@router.get("/pending-photographers")
+def pending_photographers(db: Session = Depends(get_db)):
+    return db.query(User).filter(User.role == "fotograf", User.is_approved == False).all()
+
+@router.patch("/approve-photographer/{user_id}")
+def approve_photographer(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).get(user_id)
+    if not user or user.role != "fotograf":
+        raise HTTPException(status_code=404, detail="Fotograful nu există.")
+    user.is_approved = True
+    db.commit()
+    return {"message": "Fotograful a fost aprobat."}
+
+@router.patch("/approve-photographer/{user_id}")
+def approve_photographer(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).get(user_id)
+    if not user or user.role != "fotograf":
+        raise HTTPException(status_code=404, detail="Fotograful nu există.")
+    user.is_approved = True
+    db.commit()
+    return {"message": "Fotograful a fost aprobat."}

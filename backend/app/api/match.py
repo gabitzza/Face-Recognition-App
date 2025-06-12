@@ -1,4 +1,5 @@
 from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException
+from flask import app
 from sqlalchemy.orm import Session
 import shutil
 import os
@@ -19,6 +20,7 @@ from app.models.contests import Contest
 
 router = APIRouter()
 
+
 # Define the folder where uploaded files will be stored temporarily
 UPLOAD_FOLDER = "temp_uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -28,12 +30,20 @@ def sanitize_filename(name):
     name = re.sub(r'\s+', '_', name)
     return name
 
+def normalize_path(path):
+    # Înlocuiește '-' cu ' - ' doar pentru segmentul relevant
+    return path.replace('fotograf-test', 'fotograf - test')
+
+def public_path(db_path):
+    return db_path.replace('fotograf - test', 'fotograf-test')
+
 @router.post("/match-photo")
 async def match_photo(
     file: UploadFile,
     contest_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
+    print("🚨 Ajuns în /add-to-favorites")
     from app.utils.face_encoder_insight import encode_image_insightface
     from app.utils.face_matcher_insight import cosine_similarity
 
@@ -101,6 +111,7 @@ def save_to_gallery(data: dict, db: Session = Depends(get_db), current_user: Use
     db.commit()
     return {"message": "Salvat în galerie"}
 
+
 @router.get("/my-matches")
 def get_my_matches(
     db: Session = Depends(get_db),
@@ -140,28 +151,37 @@ def get_favorite_photos(
     }
 
 @router.post("/add-to-favorites")
-def add_to_favorites(
-    data: dict,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    image_path = data.get("image_path")
-    if not image_path:
-        raise HTTPException(status_code=400, detail="Path invalid")
+def add_to_favorites(data: dict, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    try:
+        print("🚨 Ajuns în /add-to-favorites")
+        print("📦 Primim:", data)
+        print("👤 User:", current_user)
 
-    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
-    if not photo:
-        raise HTTPException(status_code=404, detail="Poza nu există")
+        image_path = data.get("image_path")
+        if not image_path:
+            raise HTTPException(status_code=400, detail="Path invalid")
 
-    user = db.query(User).filter(User.id == current_user.id).first()
+        # Normalizează path-ul primit de la frontend
+        image_path_db = normalize_path(image_path)
 
-    if user in photo.favorited_by:
-        raise HTTPException(status_code=409, detail="Poza este deja la favorite")
+        photo = db.query(Photo).filter(Photo.image_path == image_path_db).first()
+        if not photo:
+            raise HTTPException(status_code=404, detail="Poza nu există")
 
-    photo.favorited_by.append(user)
-    db.commit()
-    return {"message": "Poza adăugată la favorite"}
+        print("✅ Poza găsită:", photo.image_path)
 
+        if current_user in photo.favorited_by:
+            print("⚠️ Deja e la favorite")
+            raise HTTPException(status_code=409, detail="Deja este la favorite")
+
+        photo.favorited_by.append(current_user)
+        db.commit()
+        print("💾 Adăugat cu succes")
+
+        return {"message": "Poza adăugată la favorite"}
+    except Exception as e:
+        print("EROARE LA FAVORITE:", e)
+        raise
 
 
 @router.delete("/remove-from-favorites")

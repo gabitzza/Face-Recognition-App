@@ -13,9 +13,11 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://127.0.0.1:8000/login", formData, {
+      const res = await axios.post("http://127.0.0.1:8000/auth/login", formData, {
         headers: { "Content-Type": "application/json" }
       });
+
+      
   
       const { access_token, user } = res.data;
   
@@ -35,7 +37,9 @@ function Login() {
       }
   
     } catch (err) {
-      if (err.response) {
+       if (err.response && err.response.status === 403) {
+      alert("Contul tău nu a fost încă aprobat de administrator.");
+    } else if (err.response) {
         // Server responded with a status code outside the 2xx range
         console.error("Error response:", err.response);
         alert(`Eroare: ${err.response.data.message || "Email sau parolă greșită!"}`);
