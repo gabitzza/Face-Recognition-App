@@ -1,4 +1,0 @@
-passlib[bcrypt]
-uvicorn
-fastapi
-pydantic[email]
