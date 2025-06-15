@@ -178,9 +178,9 @@ def get_favorite_photos(
     return {"favorites": favorites}
 
 
-@router.delete("/remove-from-favorites")
+@router.post("/remove-from-favorites")
 def remove_from_favorites(
-    data: dict = Body(...),  
+    data: dict,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

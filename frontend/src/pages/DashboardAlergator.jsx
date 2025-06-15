@@ -202,9 +202,8 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("/remove-from-favorites", {
-        data: { image_path: imagePath },
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.post("/remove-from-favorites", {
+        image_path
       });
 
       alert("💔 Eliminat din favorite!");
