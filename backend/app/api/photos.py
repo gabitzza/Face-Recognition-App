@@ -10,7 +10,6 @@ from .auth import get_current_user
 from fastapi import Form
 from app.models.contests import Contest
 import hashlib
-from app.utils.face_encoder import encode_all_faces
 import unicodedata
 import re
 import json
