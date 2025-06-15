@@ -1,5 +1,4 @@
 from fastapi import APIRouter, UploadFile, Form, File, Depends, HTTPException
-from flask import app
 from sqlalchemy.orm import Session
 import shutil
 import os
