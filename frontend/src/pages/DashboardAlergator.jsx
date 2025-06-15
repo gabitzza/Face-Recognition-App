@@ -472,8 +472,18 @@ const DashboardAlergator = () => {
             render={{
               slideFooter: () => (
                 <div className="lightbox-actions">
-
-
+                  <button
+                    onClick={() => handleAddToFavorites(matchResults[index].image)}
+                    className="favorite-btn"
+                  >
+                    ⭐ Favorite
+                  </button>
+                  <button
+                    onClick={() => setOpen(false)}
+                    className="close-btn"
+                  >
+                    ✖ Închide
+                  </button>
                 </div>
               )
             }}
