@@ -1,6 +1,6 @@
 import os
 import shutil
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException,  BackgroundTasks
+from fastapi import APIRouter, Body, UploadFile, File, Depends, HTTPException,  BackgroundTasks
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
@@ -180,7 +180,7 @@ def get_favorite_photos(
 
 @router.delete("/remove-from-favorites")
 def remove_from_favorites(
-    data: dict,
+    data: dict = Body(...),  
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
