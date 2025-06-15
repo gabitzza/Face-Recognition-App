@@ -7,8 +7,7 @@ from PIL import Image
 from requests import Session
 from app.utils.face_encoder_insight import encode_image_insightface
 from multiprocessing import freeze_support
-
-from backend.app.models.photos import Photo
+from app.models.photos import Photo
 
 def save_thumbnail(original_path, size=(600, 400)):
     from PIL import Image
