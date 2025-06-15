@@ -380,7 +380,7 @@ const DashboardAlergator = () => {
 
                 </section>
               ) : (
-                selectedFile && <p className="text-muted">Nu am găsit poze potrivite pentru tine la acest concurs.</p>
+                selectedFile && <p className="text-muted">Apasă pe butonul ”Cauta poze cu mine” și așteaptă câteva secunde</p>
               )}
 
 
