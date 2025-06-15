@@ -202,7 +202,7 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("api/gallery/delete-from-gallery", {
+      await axios.delete("api/remove-from-favorites", {
         data: { image_path: imagePath },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -388,12 +388,6 @@ const DashboardAlergator = () => {
                             setIndex(index);
                           }}
                         />
-                        <button
-                          className="favorite-btn"
-                          onClick={() => handleAddToFavorites(photo.image)}
-                        >
-                          ⭐ Favorite
-                        </button>
                       </div>
                     ))}
                   </div>
@@ -476,7 +470,7 @@ const DashboardAlergator = () => {
                     onClick={() => handleAddToFavorites(matchResults[index].image)}
                     className="favorite-btn"
                   >
-                    ⭐ Favorite
+                    🖤 Favorite
                   </button>
                   <button
                     onClick={() => setOpen(false)}

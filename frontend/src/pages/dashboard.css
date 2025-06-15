@@ -285,7 +285,7 @@
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  color: white;
+  color: black;
 }
 
 .lightbox-actions button:hover {
@@ -931,19 +931,23 @@
 }
 
 .lightbox-actions {
-  padding: 1rem;
+  position: absolute;
+  top: 20px;
+  right: 20px;
   display: flex;
-  justify-content: center;
   gap: 1rem;
+  z-index: 10000;
 }
 
 .favorite-btn {
   padding: 10px 20px;
-  background-color: gold;
+  background-color:white;
   border: none;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
 }
 
 .close-btn {
