@@ -36,6 +36,7 @@ Base.metadata.create_all(bind=engine)
 
 # ✅ Înregistrăm rutele API
 app.include_router(auth.router, prefix="/auth", tags=["Autentificare"])
+app.include_router(photos.router, prefix="/api")
 app.include_router(photos.router)
 app.include_router(gallery.router, tags=["Galerie"]) 
 app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")

@@ -26,6 +26,8 @@ const DashboardAlergator = () => {
   const [visibleCount, setVisibleCount] = useState(20);
   const [selectedImage, setSelectedImage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
 
 
   const openLightbox = (imagePath) => {
@@ -195,49 +197,34 @@ const DashboardAlergator = () => {
 
 
   const handleRemoveFromFavorites = async (imagePath) => {
+  if (!imagePath) {
+    console.warn("Imaginea nu este definită.");
+    return;
+  }
+
+  try {
     const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Trebuie să fii logat.");
-      return;
-    }
+    await axios.post("/remove-from-favorites", { image_path: imagePath }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
 
-    try {
-      await axios.post("/remove-from-favorites", {
-        image_path
-      });
+    setFavoritePhotos((prev) => prev.filter((path) => path !== imagePath));
+    setMessage("🖤 Poza a fost ștearsă din favorite");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  } catch (err) {
+    console.error("Eroare la ștergere:", err);
+    setMessage("❌ Eroare la ștergere");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  }
+};
 
-      alert("💔 Eliminat din favorite!");
-      setFavoritePhotos(prev => prev.filter(path => path !== imagePath));
-      setFavoriteOpen(false); // ← închide lightbox-ul după ștergere
-    } catch (err) {
-      console.error("❌ Eroare la ștergere:", err);
-      alert("Nu s-a putut elimina poza.");
-    }
-  };
 
-  const handleDeleteFromGallery = async (imagePath) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Trebuie să fii logat.");
-      return;
-    }
 
-    try {
-      await axios.delete("api/delete-from-gallery", {
-        data: { image_path: imagePath },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setGalleryPhotos(prev => prev.filter(path => path !== imagePath));
-      setGalleryOpen(false);
-      alert("🗑️ Poza a fost ștearsă din galeria ta.");
-    } catch (err) {
-      console.error("Eroare la ștergerea pozei din galerie:", err);
-      alert("Nu am putut șterge poza.");
-    }
-  };
 
 
   const handleLogout = () => {
@@ -509,16 +496,14 @@ const DashboardAlergator = () => {
             render={{
               slideFooter: () => (
                 <div className="lightbox-actions">
-                  <button
-                    className="remove-from-favorite"
-                    onClick={() => handleRemoveFromFavorites(favoritePhotos[favoriteIndex])}
-                  >
-                    💔 Scoate din favorite
+                  <button onClick={() => handleRemoveFromFavorites(favoritePhotos[favoriteIndex])}>
+                    ✖ Scoate din favorite
                   </button>
                 </div>
               )
             }}
           />
+
         </main>
       </div>
     </>
