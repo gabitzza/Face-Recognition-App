@@ -13,32 +13,38 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://65.21.158.70:8000/auth/login", formData, {
+      const res = await axios.post("/api/auth/login", formData, {
         headers: { "Content-Type": "application/json" }
       });
 
-  
       const { access_token, user } = res.data;
-  
+      console.log("🔁 Response:", res.data);
+
+      if (!access_token || !user) {
+        alert("Login invalid — backend nu a returnat datele așteptate.");
+        console.log("Răspuns invalid:", res.data);
+        return;
+      }
       // ✅ Salvăm token și user în localStorage
       localStorage.setItem("token", access_token);
       localStorage.setItem("user", JSON.stringify(user));
-  
+
       alert("Autentificare reușită!");
-  
+
       // ✅ Redirecționăm în funcție de rol
-      if(user.role === "admin") {
-        navigate("/dashboard-admin");}
+      if (user.role === "admin") {
+        navigate("/dashboard-admin");
+      }
       else if (user.role === "alergator") {
         navigate("/dashboard-alergator");
       } else {
         navigate("/dashboard-fotograf");
       }
-  
+
     } catch (err) {
-       if (err.response && err.response.status === 403) {
-      alert("Contul tău nu a fost încă aprobat de administrator.");
-    } else if (err.response) {
+      if (err.response && err.response.status === 403) {
+        alert("Contul tău nu a fost încă aprobat de administrator.");
+      } else if (err.response) {
         // Server responded with a status code outside the 2xx range
         console.error("Error response:", err.response);
         alert(`Eroare: ${err.response.data.message || "Email sau parolă greșită!"}`);
@@ -81,7 +87,7 @@ function Login() {
               Creează aici
             </Link>
           </span>
-          <div style={{fontSize: "0.85rem", marginTop: 8, color: "#b3e0ff"}}>
+          <div style={{ fontSize: "0.85rem", marginTop: 8, color: "#b3e0ff" }}>
             <Link to="/politica-confidentialitate" className="login-glass-link">
               Politica de confidențialitate
             </Link>

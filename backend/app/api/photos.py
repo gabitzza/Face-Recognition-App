@@ -16,6 +16,7 @@ import json
 from sqlalchemy.orm import Session
 from app.utils.face_encoder_parallel_insight import process_folder
 from fastapi import BackgroundTasks
+import inspect
 router = APIRouter()
 
 # Calea absolută către folderul 'uploads' din backend/app
@@ -91,6 +92,7 @@ def upload_photo(
     album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name_clean, final_album_title)
     os.makedirs(album_folder_path, exist_ok=True)
 
+    
     file_path = os.path.join(album_folder_path, file.filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
@@ -101,7 +103,7 @@ def upload_photo(
         photographer_id=current_user.id,
         uploaded_at=datetime.utcnow(),
         photo_hash=file_hash,
-        face_encoding=None
+        face_encoding=None  # Set to None or appropriate default until encoding is available
     )
     db.add(photo)
     db.commit()
@@ -121,42 +123,6 @@ def upload_photo(
     }
 
 
-@router.post("/process-album")
-def process_album(
-    contest_id: int = Form(...),
-    album_title: str = Form(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    from app.utils.face_encoder_parallel_insight import process_folder
-
-    if current_user.role != "fotograf":
-        raise HTTPException(status_code=403, detail="Doar fotografii pot procesa albume.")
-
-    contest = db.query(Contest).filter_by(id=contest_id).first()
-    if not contest:
-        raise HTTPException(status_code=404, detail="Concursul nu există.")
-
-    contest_name = sanitize_filename(contest.name)
-    album_title_clean = album_title.strip()
-    final_album_title = f"{current_user.full_name}-{album_title_clean}".strip()
-    album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name, final_album_title)
-
-    if not os.path.exists(album_folder_path):
-        raise HTTPException(status_code=404, detail="Folderul nu există (pozele nu sunt încărcate complet?)")
-
-    output_filename = f"encoded_{contest_name}_{current_user.full_name.replace(' ', '')}-{album_title_clean.replace(' ', '')}.json"
-    output_path = os.path.join("app", "encodings", output_filename)
-
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
-    # 🔁 Procesare paralelă + thumbnails
-    process_folder(album_folder_path, output_path)
-
-    return {
-        "message": f"Album procesat cu succes",
-        "encoded_file": output_filename
-    }
 
 @router.get("/debug-face-encoding/{photo_id}")
 def debug_encoding(photo_id: int, db: Session = Depends(get_db)):
@@ -165,3 +131,65 @@ def debug_encoding(photo_id: int, db: Session = Depends(get_db)):
         "raw": photo.face_encoding,
         "parsed": json.loads(photo.face_encoding) if photo.face_encoding else None
     }
+
+@router.post("/add-to-favorites")
+def add_to_favorites(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    print("📄 FUNCȚIE FOLOSITĂ:", inspect.getfile(add_to_favorites))
+    print("🚨 Ajuns în /add-to-favorites")
+    print("✅ FUNCȚIE CORECTĂ /add-to-favorites")
+    image_path = data.get("image_path")
+    if not image_path:
+        raise HTTPException(status_code=400, detail="Path invalid")
+
+    # Refacem ambele obiecte în sesiunea activă
+    user = db.query(User).filter(User.id == current_user.id).first()
+    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
+
+    if not photo:
+        raise HTTPException(status_code=404, detail="Poza nu există")
+
+    print(f"👤 user.id: {user.id}, current_user.id: {current_user.id}")
+    print(f"✅ Poza găsită: {photo.image_path}")
+
+    # Important! Nu folosi current_user deloc în context SQLAlchemy!
+    if user in photo.favorited_by:
+        raise HTTPException(status_code=409, detail="Poza este deja la favorite")
+
+    photo.favorited_by.append(user)
+    db.commit()
+
+    return {"message": "Adăugat la favorite"}
+
+
+
+
+
+@router.get("/favorites")
+def get_favorite_photos(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    user = db.query(User).filter(User.id == current_user.id).first()
+    favorites = [photo.image_path for photo in user.favorite_photos]
+    return {"favorites": favorites}
+
+
+@router.delete("/remove-from-favorites")
+def remove_from_favorites(
+    data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    image_path = data.get("image_path")
+    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
+    if not photo or photo not in current_user.favorite_photos:
+        raise HTTPException(status_code=404, detail="Poza nu este în favorite")
+
+    current_user.favorite_photos.remove(photo)
+    db.commit()
+    return {"message": "Poza a fost eliminată din favorite"}
+

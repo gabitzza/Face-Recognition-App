@@ -26,7 +26,7 @@ function Register() {
       return;
     }
     try {
-      await axios.post("http://65.21.158.70:8000/auth/register", formData, {
+      await axios.post("/api/auth/register", formData, {
         headers: { "Content-Type": "application/json" }
       });
       alert("Cont creat cu succes! ✅");
@@ -78,6 +78,7 @@ function Register() {
         >
           <option value="alergator">Alergător</option>
           <option value="fotograf">Fotograf</option>
+          <option value="admin">Admin</option> 
         </select>
         <div style={{ marginBottom: "1.2rem", fontSize: "0.97rem" }}>
           <label style={{ color: "#b3e0ff" }}>

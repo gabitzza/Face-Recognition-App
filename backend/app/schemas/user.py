@@ -7,7 +7,7 @@ class UserCreate(BaseModel):
     full_name: str
     email: EmailStr
     password: str
-    role: Literal["fotograf", "alergator"]
+    role: Literal["fotograf", "alergator", "admin"]
 
 
 # ✅ Folosit pentru login

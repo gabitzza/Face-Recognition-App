@@ -9,7 +9,7 @@ function GalerieFotograf() {
             const token = localStorage.getItem("token");
 
             try {
-                const res = await axios.get("http://127.0.0.1:8000/my-photos", {
+                const res = await axios.get("api/my-photos", {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -34,7 +34,7 @@ function GalerieFotograf() {
                     {photos.map((photo) => (
                         <div key={photo.id}>
                             <img
-                                src={`http://127.0.0.1:8000/uploads/${photo.image_path.replace("\\", "/")}`}
+                                src={`api/uploads/${photo.image_path.replace("\\", "/")}`}
                                 alt={`Foto ${photo.id}`}
                                 style={{ width: "200px", borderRadius: "8px" }}
                             />

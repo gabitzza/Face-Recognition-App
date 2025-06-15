@@ -42,7 +42,6 @@ async def match_photo(
     contest_id: int = Form(...),
     db: Session = Depends(get_db)
 ):
-    print("🚨 Ajuns în /add-to-favorites")
     from app.utils.face_encoder_insight import encode_image_insightface
     from app.utils.face_matcher_insight import cosine_similarity
 
@@ -101,15 +100,6 @@ async def match_photo(
 
 
 
-@router.post("/save-to-gallery")
-def save_to_gallery(data: dict, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    photo = db.query(Photo).filter(Photo.image_path == data["image_path"]).first()
-    if not photo:
-        raise HTTPException(status_code=404, detail="Poza nu există")
-    photo.matched_runner_id = current_user.id
-    db.commit()
-    return {"message": "Salvat în galerie"}
-
 
 @router.get("/my-matches")
 def get_my_matches(
@@ -131,78 +121,5 @@ def get_my_matches(
         ]
     }
 
-@router.get("/favorites")
-def get_favorite_photos(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    user = db.query(User).filter(User.id == current_user.id).first()
 
-    favorites = user.favorite_photos
-    return {
-        "favorites": [
-            {
-                "image": photo.image_path,
-                "thumb": f"thumbs/{photo.image_path}"
-            }
-            for photo in favorites
-        ]
-    }
-
-@router.post("/add-to-favorites")
-def add_to_favorites(data: dict, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    try:
-        print("🚨 Ajuns în /add-to-favorites")
-        print("📦 Primim:", data)
-        print("👤 User:", current_user)
-
-        image_path = data.get("image_path")
-        if not image_path:
-            raise HTTPException(status_code=400, detail="Path invalid")
-
-        # Normalizează path-ul primit de la frontend
-        image_path_db = normalize_path(image_path)
-
-        photo = db.query(Photo).filter(Photo.image_path == image_path_db).first()
-        if not photo:
-            raise HTTPException(status_code=404, detail="Poza nu există")
-
-        print("✅ Poza găsită:", photo.image_path)
-
-        if current_user in photo.favorited_by:
-            print("⚠️ Deja e la favorite")
-            raise HTTPException(status_code=409, detail="Deja este la favorite")
-
-        photo.favorited_by.append(current_user)
-        db.commit()
-        print("💾 Adăugat cu succes")
-
-        return {"message": "Poza adăugată la favorite"}
-    except Exception as e:
-        print("EROARE LA FAVORITE:", e)
-        raise
-
-
-@router.delete("/remove-from-favorites")
-def remove_from_favorites(
-    data: dict,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    image_path = data.get("image_path")
-    if not image_path:
-        raise HTTPException(status_code=400, detail="Path invalid")
-
-    photo = db.query(Photo).filter(Photo.image_path == image_path).first()
-    if not photo:
-        raise HTTPException(status_code=404, detail="Poza nu există")
-
-    user = db.query(User).filter(User.id == current_user.id).first()
-
-    if user in photo.favorited_by:
-        photo.favorited_by.remove(user)
-        db.commit()
-        return {"message": "Poza a fost eliminată din favorite"}
-
-    raise HTTPException(status_code=404, detail="Poza nu era în favorite")
 

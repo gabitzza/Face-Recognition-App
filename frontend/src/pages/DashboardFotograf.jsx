@@ -19,7 +19,7 @@ const DashboardFotograf = () => {
 
     const fetchContests = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/contests");
+        const res = await axios.get("api/contests");
         setContests(res.data);
       } catch (err) {
         console.error("❌ Eroare la încărcarea concursurilor:", err);
@@ -48,7 +48,7 @@ const DashboardFotograf = () => {
       formData.append("contest_name", contestName); // 👈 important pentru backend
 
       try {
-        const res = await axios.post("http://127.0.0.1:8000/upload-photo", formData, {
+        const res = await axios.post("api/upload-photo", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",

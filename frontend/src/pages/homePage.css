@@ -236,7 +236,6 @@ h2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-right: 2.5rem;
   min-width: 260px;
 }
 
@@ -623,4 +622,65 @@ a:hover {
   color: #b3e0ff;
   font-size: 0.97rem;
   letter-spacing: 1px;
+}
+
+.future-events-title {
+  font-size: 2.7rem;
+  font-weight: 800;
+  fill: #fff;
+  letter-spacing: 2px;
+}
+
+.future-events-title.mobile {
+  display: none;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+  margin: 0;
+  text-align: center;
+}
+
+.future-events-title.desktop {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .future-events-svg.desktop {
+    display: none;
+  }
+  .future-events-title.desktop {
+    display: none;
+  }
+  .future-events-title.mobile {
+    display: block;
+  }
+  .stats-item {
+    border-left: none;
+  }
+
+  .carousel-card{
+    width: 240px;
+    height: 310px;
+  }
+
+  .future-events-title {
+  font-size: 1.7rem;
+  }
+
+  .carousel-btn{
+    margin-bottom: 5rem;
+  }
+
+  .contests-title {
+        text-align-last: center;
+        margin-left:0px;  
+}
+
+.custom-middle-section {
+    padding: 15rem 1rem;
+}
+.custom-middle-content h2 {
+    font-size: 2rem;
+}
 }

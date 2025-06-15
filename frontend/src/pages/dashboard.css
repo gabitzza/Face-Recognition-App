@@ -766,3 +766,166 @@
   height: 100%;
   cursor: pointer;
 }
+
+/* Ascunde sidebar-ul pe mobil, afișează hamburger */
+@media (max-width: 700px) {
+  
+.match-form-row {
+ flex-direction: column-reverse;
+}
+
+.dashboard-glass-card {
+  min-width: 250px;
+}
+.upload-form{
+      width: 75%;
+}
+.header h2 {
+  font-size: 1.5rem;
+  margin-left: 0;
+}
+.container{
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    width: 220px;
+    height: 95vh;
+    background: #01161E;
+    z-index: 1002;
+    transition: left 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s;
+    opacity: 0.98;
+    box-shadow: 2px 0 16px rgba(0,0,0,0.18);
+    padding-top: 2.5rem;
+  }
+  .sidebar.open {
+    left: 0;
+    animation: fadeInSidebar 0.35s;
+  }
+  .mobile-navbar {
+        background-color: transparent;
+        position: fixed;
+  }
+  .hamburger-btn {
+    background:transparent;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .hamburger-btn span {
+        display: block;
+        width: 26px;
+        height: 3px;
+        background: #ffffff;
+        border-radius: 2px;
+        transition: all 0.2s;
+  }
+  .close-btn {
+        position: absolute;
+        top: 22px;
+        right: -10px;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.6rem;
+        cursor: pointer;
+        z-index: 1101;
+  }
+}
+
+/* Ascunde sidebar-ul pe mobil dacă nu e open */
+@media (max-width: 700px) {
+  .sidebar:not(.open) {
+    pointer-events: none;
+  }
+}
+
+/* Ascunde sidebar și afișează hamburger doar pe mobil */
+@media (min-width: 701px) {
+  .mobile-navbar {
+    display: none;
+  }
+  .close-btn {
+    display: none;
+  }
+}
+
+/* Fade-in animatie */
+@keyframes fadeInSidebar {
+  from {
+    left: -260px;
+    opacity: 0.5;
+  }
+  to {
+    left: 0;
+    opacity: 0.98;
+  }
+}
+
+.match-form-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  z-index: 1001;
+  touch-action: none;
+}
+
+/* Stil pentru galeria de rezultate din DashboardAlergator */
+.match-results-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.match-results-gallery img {
+  width: 210px;
+  height: 255px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  transition: transform 0.18s, box-shadow 0.18s;
+  background: #f3f6f8;
+  cursor: pointer;
+}
+
+.match-results-gallery img:hover {
+  transform: scale(1.04) translateY(-4px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+  z-index: 2;
+}
+
+.photo-card {
+  display: inline-block;
+  margin: 10px;
+  text-align: center;
+}
+
+.favorite-btn {
+  margin-top: 5px;
+  background-color: gold;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: bold;
+}

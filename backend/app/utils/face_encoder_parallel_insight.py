@@ -4,8 +4,11 @@ import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 from PIL import Image
+from requests import Session
 from app.utils.face_encoder_insight import encode_image_insightface
 from multiprocessing import freeze_support
+
+from backend.app.models.photos import Photo
 
 def save_thumbnail(original_path, size=(600, 400)):
     from PIL import Image
@@ -85,7 +88,36 @@ def process_folder(folder: str, output_file: str, workers: int = 1):
     print(f"👥 Total fețe detectate și encodate: {total_faces}")
     print(f"📝 Salvat în: {output_file}")
 
+def update_face_encodings_from_json(json_path: str, album_folder: str, db: Session):
+    """
+    Actualizează câmpul `face_encoding` în DB pentru fiecare poză dintr-un album,
+    folosind encodingurile salvate în fișierul JSON de la `process_folder`.
+    """
+    if not os.path.exists(json_path):
+        print(f"[❌] Fișierul de encoding nu există: {json_path}")
+        return
 
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    updated = 0
+    for filename, encodings in data.items():
+        if not encodings:
+            continue
+
+        rel_path = os.path.relpath(os.path.join(album_folder, filename), start="app/uploads").replace("\\", "/")
+
+        photo = db.query(Photo).filter(Photo.image_path == rel_path).first()
+        if photo:
+            photo.face_encoding = json.dumps(encodings[0])  # ✅ doar primul encoding
+            updated += 1
+        else:
+            print(f"[WARN] Nu am găsit în DB poza: {rel_path}")
+
+    db.commit()
+    print(f"[✅] {updated} poze actualizate în baza de date cu encoding.")
+
+    
 if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(description="Encode fețe folosind InsightFace în paralel")

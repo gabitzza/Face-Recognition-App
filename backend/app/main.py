@@ -25,7 +25,7 @@ async def list_routes_on_startup():
 #  CORS Middleware – trebuie pus ÎNAINTE de rute
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Your frontend's URL
+    allow_origins=["api/5173"],  # Your frontend's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

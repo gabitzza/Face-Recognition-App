@@ -19,14 +19,14 @@ const DashboardAdmin = () => {
   const [activeTab, setActiveTab] = useState("add-contest");
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/contests")
+    axios.get("api/contests")
       .then(res => setContests(res.data))
       .catch(err => console.error("Eroare la preluare concursuri:", err));
   }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    axios.get("http://127.0.0.1:8000/auth/pending-photographers", {
+    axios.get("api/auth/pending-photographers", {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setPending(res.data))
@@ -35,7 +35,7 @@ const DashboardAdmin = () => {
 
   const handleApprove = (id) => {
     const token = localStorage.getItem("token");
-    axios.patch(`http://127.0.0.1:8000/auth/approve-photographer/${id}`, null, {
+    axios.patch(`api/auth/approve-photographer/${id}`, null, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(() => setPending(pending.filter(p => p.id !== id)))
@@ -54,7 +54,7 @@ const DashboardAdmin = () => {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/contests", formData, {
+      await axios.post("api/contests", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -65,7 +65,7 @@ const DashboardAdmin = () => {
       setDate("");
       setImageFile(null);
 
-      const refreshed = await axios.get("http://127.0.0.1:8000/contests");
+      const refreshed = await axios.get("api/contests");
       setContests(refreshed.data);
     } catch (error) {
       console.error("Eroare la adăugare:", error);
@@ -73,6 +73,33 @@ const DashboardAdmin = () => {
     }
   };
 
+  const handleAddToFavorites = async (imagePath) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Trebuie să fii logat.");
+    return;
+  }
+
+  if (favoritePhotos.includes(imagePath)) {
+    alert("✅ Această poză este deja la favorite.");
+    return;
+  }
+
+  try {
+    await axios.post("api/add-to-favorites", {
+      image_path: imagePath
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    alert("⭐ Adăugat la favorite!");
+    setFavoritePhotos(prev => [...prev, imagePath]);
+  } catch (err) {
+    console.error("❌ Eroare la favorite:", err);
+    alert("A apărut o problemă.");
+  }
+};
   return (
     <div className="dashboard">
       <aside className="sidebar">
@@ -165,7 +192,7 @@ const DashboardAdmin = () => {
               {contests.map((contest) => (
                 <li key={contest.id}>
                   {contest.image_path && (
-                    <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt="afis" />
+                    <img src={`api/${contest.image_path}`} alt="afis" />
                   )}
 
                   <div className="event-info">
@@ -208,11 +235,11 @@ const DashboardAdmin = () => {
                             }
 
                             try {
-                              await axios.put(`http://127.0.0.1:8000/contests/${contest.id}`, formData, {
+                              await axios.put(`api/contests/${contest.id}`, formData, {
                                 headers: { "Content-Type": "multipart/form-data" },
                               });
 
-                              const refreshed = await axios.get("http://127.0.0.1:8000/contests");
+                              const refreshed = await axios.get("api/contests");
                               setContests(refreshed.data);
                               setEditingId(null);
                               setUpdatedName("");
@@ -249,7 +276,7 @@ const DashboardAdmin = () => {
                           onClick={async () => {
                             if (window.confirm("Ești sigur că vrei să ștergi acest concurs?")) {
                               try {
-                                await axios.delete(`http://127.0.0.1:8000/contests/${contest.id}`);
+                                await axios.delete(`api/contests/${contest.id}`);
                                 setContests(contests.filter(c => c.id !== contest.id));
                               } catch (err) {
                                 alert("Eroare la ștergerea concursului.");

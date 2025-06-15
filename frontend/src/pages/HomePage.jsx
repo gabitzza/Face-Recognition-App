@@ -64,7 +64,7 @@ const ContestCarousel = ({ contests }) => {
                 }
               }}
             >
-              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
+              <img src={`api/${contest.image_path}`} alt={contest.name} />
               <div className="carousel-card-info">
                 <div className="carousel-card-title">{contest.name}</div>
                 <div className="carousel-card-date">{new Date(contest.date).toLocaleDateString()}</div>
@@ -144,7 +144,7 @@ const PastContestsSlider = ({ contests }) => {
                 transition: "transform 0.5s cubic-bezier(.4,0,.2,1), opacity 0.3s"
               }}
             >
-              <img src={`http://127.0.0.1:8000/${contest.image_path}`} alt={contest.name} />
+              <img src={`api/${contest.image_path}`} alt={contest.name} />
               <div className="carousel-card-info">
                 <div className="carousel-card-title">{contest.name}</div>
                 <div className="carousel-card-date">{new Date(contest.date).toLocaleDateString()}</div>
@@ -178,7 +178,7 @@ const HomePage = () => {
   const [contestsVisible, setContestsVisible] = useState(false);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/contests')
+    axios.get('api/contests')
       .then(res => setContests(res.data))
       .catch(err => console.error('Eroare la preluare concursuri:', err));
   }, []);
@@ -242,7 +242,7 @@ const HomePage = () => {
         <video
           className="hero-video-bg"
           ref={videoRef}
-          src="/src/assets/images/videowallpaper.mp4"
+            src="/videowallpaper.mp4"
           autoPlay
           muted
           playsInline
@@ -298,16 +298,17 @@ const HomePage = () => {
         ref={contestsRef}
       >
         <div className="contests-title-svg">
-          <svg width="600" height="100">
+          <svg width="600" height="100" className="future-events-svg desktop">
             <defs>
-              <path id="curve" d="M60,60 Q300,10 540,60" />
+              <path id="curve-desktop" d="M60,60 Q300,10 540,60" />
             </defs>
-            <text width="600" style={{ fontSize: '2.7rem', fontWeight: 800, fill: '#fff', letterSpacing: '2px' }}>
-              <textPath xlinkHref="#curve" startOffset="0%">
+            <text width="600" className="future-events-title desktop">
+              <textPath xlinkHref="#curve-desktop" startOffset="0%">
                 Evenimente viitoare
               </textPath>
             </text>
           </svg>
+          <h2 className="future-events-title mobile">Evenimente viitoare</h2>
         </div>
         <ContestCarousel contests={futureContests} />
       </section>

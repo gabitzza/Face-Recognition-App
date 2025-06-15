@@ -25,6 +25,7 @@ const DashboardAlergator = () => {
   const [favoriteIndex, setFavoriteIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(20);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
   const openLightbox = (imagePath) => {
@@ -50,7 +51,7 @@ const DashboardAlergator = () => {
 
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/contests")
+    axios.get("api/contests")
       .then(res => setContests(res.data))
       .catch(err => console.error("Eroare la preluare concursuri:", err));
   }, []);
@@ -58,7 +59,7 @@ const DashboardAlergator = () => {
   useEffect(() => {
     if (activeTab === "gallery") {
       const token = localStorage.getItem("token");
-      axios.get("http://127.0.0.1:8000/my-matches", {
+      axios.get("api/my-matches", {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -71,7 +72,7 @@ const DashboardAlergator = () => {
   useEffect(() => {
     if (activeTab === "favorites") {
       const token = localStorage.getItem("token");
-      axios.get("http://127.0.0.1:8000/favorites", {
+      axios.get("api/favorites", {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -85,9 +86,9 @@ const DashboardAlergator = () => {
     const parts = imgPath.split('/');
     if (parts.length >= 2) {
       const [event, ...rest] = parts;
-      return `http://127.0.0.1:8000/uploads/${event}/thumbs/${rest.join('/')}`;
+      return `api/uploads/${event}/thumbs/${rest.join('/')}`;
     }
-    return `http://127.0.0.1:8000/uploads/${encodeURIComponent(imgPath)}`;
+    return `api/uploads/${encodeURIComponent(imgPath)}`;
   };
 
   const handleFileChange = (e) => {
@@ -106,7 +107,7 @@ const DashboardAlergator = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/match-photo", formData, {
+      const res = await axios.post("api/match-photo", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${token}`
@@ -118,7 +119,7 @@ const DashboardAlergator = () => {
 
       // 🔍 DEBUG LOGURI
       console.log("✔️ Rezultate raw din backend:", res.data?.matches);
-      console.log("🖼️ URL-uri finale construite:", images.map(p => `http://127.0.0.1:8000/uploads/${encodeURIComponent(p)}`));
+      console.log("🖼️ URL-uri finale construite:", images.map(p => `api/uploads/${encodeURIComponent(p)}`));
     } catch (err) {
       console.error("Eroare la upload/match:", err);
       alert("Eroare la încărcarea pozei.");
@@ -141,8 +142,8 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/save-to-gallery", {
-        image_path: imagePath
+      await axios.post("api/save-to-gallery", {
+        image_path: imagePath.image
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -150,7 +151,7 @@ const DashboardAlergator = () => {
       });
 
       alert("✔️ Imagine salvată în galeria ta!");
-      setGalleryPhotos(prev => [...prev, imagePath]); // ⬅️ actualizăm galeria local
+      setGalleryPhotos(prev => [...prev, imagePath]);
     } catch (err) {
       console.error("❌ Eroare la salvare:", err);
       alert("A apărut o problemă.");
@@ -163,7 +164,7 @@ const DashboardAlergator = () => {
       alert("Trebuie să fii logat.");
       return;
     }
-     console.log("📦 Trimitem doar image_path:", imagePath);
+    console.log("📦 Trimitem doar image_path:", imagePath);
 
     // ✅ verificare locală dacă poza e deja în lista de favorite
     if (favoritePhotos.includes(imagePath)) {
@@ -172,8 +173,8 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.post("http://127.0.0.1:8000/add-to-favorites", {
-        image_path: imagePath, // nu imagePath.image!
+      await axios.post("api/add-to-favorites", {
+        image_path: imagePath,
       }, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -201,7 +202,7 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("http://127.0.0.1:8000/gallery/delete-from-gallery", {
+      await axios.delete("api/gallery/delete-from-gallery", {
         data: { image_path: imagePath },
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -223,7 +224,7 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("http://127.0.0.1:8000/delete-from-gallery", {
+      await axios.delete("api/delete-from-gallery", {
         data: { image_path: imagePath },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -247,242 +248,277 @@ const DashboardAlergator = () => {
   };
 
 
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
+
+
   return (
-    <div className="dashboard">
-      <aside className="sidebar">
-        <h1 className="logo">FaceApp</h1>
-        <nav>
-          <ul>
-            <li className={activeTab === "match" ? "active" : ""} onClick={() => setActiveTab("match")}> <Home size={16} /> Caută poze</li>
-            <li className={activeTab === "calendar" ? "active" : ""} onClick={() => setActiveTab("calendar")}>
-              <CalendarDays size={16} /> Concursuri viitoare
-            </li>
-            <li className={activeTab === "gallery" ? "active" : ""} onClick={() => setActiveTab("gallery")}> <ImageIcon size={16} /> Galeria mea</li>
-            <li className={activeTab === "favorites" ? "active" : ""} onClick={() => setActiveTab("favorites")}> <Heart size={16} /> Poze favorite</li>
-            <li className="logout" onClick={handleLogout}>
-              <LogOut size={16} /> Logout
-            </li>
+    <>
+      <div className="mobile-navbar">
+        <button
+          className="hamburger-btn"
+          onClick={e => {
+            e.stopPropagation();
+            if (!sidebarOpen) setSidebarOpen(true);
+          }}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+      </div>
+      {sidebarOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={(e) => {
+            e.stopPropagation();
+            setSidebarOpen(false);
+          }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.25)",
+            zIndex: 1001,
+          }}
+        />
+      )}
+      <div className="dashboard">
+        <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
+          <button
+            className="close-btn"
+            onClick={e => {
+              e.stopPropagation();
+              setSidebarOpen(false);
+            }}
+          >
+            ✕
+          </button>
+          <h1 className="logo">FaceApp</h1>
+          <nav>
+            <ul>
+              <li className={activeTab === "match" ? "active" : ""} onClick={() => setActiveTab("match")}> <Home size={16} /> Caută poze</li>
+              <li className={activeTab === "calendar" ? "active" : ""} onClick={() => setActiveTab("calendar")}>
+                <CalendarDays size={16} /> Concursuri viitoare
+              </li>
+              <li className={activeTab === "gallery" ? "active" : ""} onClick={() => setActiveTab("gallery")}> <ImageIcon size={16} /> Galeria mea</li>
+              <li className={activeTab === "favorites" ? "active" : ""} onClick={() => setActiveTab("favorites")}> <Heart size={16} /> Poze favorite</li>
+              <li className="logout" onClick={handleLogout}>
+                <LogOut size={16} /> Logout
+              </li>
 
-          </ul>
-        </nav>
-      </aside>
+            </ul>
+          </nav>
+        </aside>
 
-      <main className="content">
-        {activeTab === "match" && (
-          <div>
-            <header className="header">
-              <h2>Caută poze cu tine</h2>
-            </header>
+        <main className="content">
+          {activeTab === "match" && (
+            <div className="container">
+              <header className="header">
+                <h2>Caută poze cu tine</h2>
+              </header>
 
 
 
-            <div style={{ display: "flex", justifyContent: "center", gap: "2.5rem" }}>
-              <form className="upload-form">
-                <label htmlFor="contest">Selectează evenimentul:</label>
-                <select
-                  id="contest"
-                  value={selectedContest}
-                  onChange={(e) => setSelectedContest(e.target.value)}
-                >
-                  <option value="">-- alege un eveniment --</option>
-                  {contests.map((contest) => (
-                    <option key={contest.id} value={contest.id}>
-                      {contest.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="match-form-row">
+                <form className="upload-form">
+                  <label htmlFor="contest">Selectează evenimentul:</label>
+                  <select
+                    id="contest"
+                    value={selectedContest}
+                    onChange={(e) => setSelectedContest(e.target.value)}
+                  >
+                    <option value="">-- alege un eveniment --</option>
+                    {contests.map((contest) => (
+                      <option key={contest.id} value={contest.id}>
+                        {contest.name}
+                      </option>
+                    ))}
+                  </select>
 
-                <div className="custom-file-input">
-                  <label htmlFor="fileUpload">Încarcă o poză</label>
-                  <input
-                    type="file"
-                    id="fileUpload"
-                    onChange={handleFileChange}
-                  />
-                </div>
+                  <div className="custom-file-input">
+                    <label htmlFor="fileUpload">Încarcă o poză</label>
+                    <input
+                      type="file"
+                      id="fileUpload"
+                      onChange={handleFileChange}
+                    />
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={handleUpload}
-                  disabled={!selectedFile || !selectedContest}
-                >
-                  Caută poze cu mine
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleUpload}
+                    disabled={!selectedFile || !selectedContest}
+                  >
+                    Caută poze cu mine
+                  </button>
 
-              </form>
-              <div className="dashboard-glass-card">
-                <div className="dashboard-glass-title">Tips pentru o poză bună</div>
-                <div style={{ color: "#b3e0ff", marginBottom: "1.2rem", fontSize: "1rem" }}>
-                  Vrei rezultate mai bune? Iată câteva sfaturi.
-                </div>
-                <div className="dashboard-glass-list" style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
-                  <div className="dashboard-glass-tip" >Folosește o poză clară, frontală.</div>
-                  <div className="dashboard-glass-tip">Evită ochelari de soare sau alte accesorii care acoperă fața.</div>
-                  <div className="dashboard-glass-tip" >Evită poze de grup – imaginea ideală este doar cu tine.</div>
+                </form>
+                <div className="dashboard-glass-card">
+                  <div className="dashboard-glass-title">Tips pentru o poză bună</div>
+                  <div style={{ color: "#b3e0ff", marginBottom: "1.2rem", fontSize: "1rem" }}>
+                    Vrei rezultate mai bune? Iată câteva sfaturi.
+                  </div>
+                  <div className="dashboard-glass-list" style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+                    <div className="dashboard-glass-tip" >Folosește o poză clară, frontală.</div>
+                    <div className="dashboard-glass-tip">Evită ochelari de soare sau alte accesorii care acoperă fața.</div>
+                    <div className="dashboard-glass-tip" >Evită poze de grup – imaginea ideală este doar cu tine.</div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {console.log("🖼️ matchResults vizibile în render:", matchResults)}
-            {matchResults.length > 0 ? (
-              <section>
-                <div>
-                  {console.log("matchResults[0]:", matchResults[0])}
-                  {matchResults.slice(0, visibleCount).map((photo, index) => (
+              {console.log("🖼️ matchResults vizibile în render:", matchResults)}
+              {matchResults.length > 0 ? (
+                <section>
+                  <div className="match-results-gallery">
+                    {matchResults.slice(0, visibleCount).map((photo, index) => (
+                      <div key={index} className="photo-card">
+                        <img
+                          src={`api/uploads/${photo.thumb.split('/').map(encodeURIComponent).join('/')}`}
+                          alt={`Poza ${index}`}
+                          onClick={() => {
+                            setOpen(true);
+                            setIndex(index);
+                          }}
+                        />
+                        <button
+                          className="favorite-btn"
+                          onClick={() => handleAddToFavorites(photo.image)}
+                        >
+                          ⭐ Favorite
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                </section>
+              ) : (
+                selectedFile && <p className="text-muted">Nu am găsit poze potrivite pentru tine la acest concurs.</p>
+              )}
+
+
+            </div>
+          )}
+
+          {activeTab === "favorites" && (
+            <section className="results">
+              <h2>Poze favorite</h2>
+              {favoritePhotos.length > 0 ? (
+                <div className="gallery">
+                  {favoritePhotos.map((imgPath, index) => (
                     <img
                       key={index}
-                      src={`http://127.0.0.1:8000/uploads/${photo.thumb.split('/').map(encodeURIComponent).join('/')}`}
-                      alt={`Poza ${index}`}
+                      src={getThumbnailUrl(imgPath)}
+                      alt="Poza favorită"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        setOpen(true);
-                        setIndex(index);
+                        setFavoriteOpen(true);
+                        setFavoriteIndex(index);
                       }}
                     />
                   ))}
                 </div>
-              </section>
-            ) : (
-              selectedFile && <p className="text-muted">Nu am găsit poze potrivite pentru tine la acest concurs.</p>
-            )}
+              ) : (
+                <p className="text-muted">Nu ai poze favorite.</p>
+              )}
+            </section>
+          )}
 
 
-          </div>
-        )}
+          {activeTab === "gallery" && (
+            <section className="results">
+              <h2>Galeria mea</h2>
+              {galleryPhotos.length > 0 ? (
+                <div className="gallery">
+                  {galleryPhotos.map((imgPath, index) => (
+                    <img
+                      key={index}
+                      src={`api/uploads/${imgPath}`}
+                      alt="Poza salvată"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setGalleryOpen(true);
+                        setGalleryIndex(index);
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted">Nu ai poze salvate în galerie.</p>
+              )}
+            </section>
+          )}
 
-        {activeTab === "favorites" && (
-          <section className="results">
-            <h2>Poze favorite</h2>
-            {favoritePhotos.length > 0 ? (
-              <div className="gallery">
-                {favoritePhotos.map((imgPath, index) => (
-                  <img
-                    key={index}
-                    src={getThumbnailUrl(imgPath)}
-                    alt="Poza favorită"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      setFavoriteOpen(true);
-                      setFavoriteIndex(index);
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted">Nu ai poze favorite.</p>
-            )}
-          </section>
-        )}
-
-
-        {activeTab === "gallery" && (
-          <section className="results">
-            <h2>Galeria mea</h2>
-            {galleryPhotos.length > 0 ? (
-              <div className="gallery">
-                {galleryPhotos.map((imgPath, index) => (
-                  <img
-                    key={index}
-                    src={`http://127.0.0.1:8000/uploads/${imgPath}`}
-                    alt="Poza salvată"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      setGalleryOpen(true);
-                      setGalleryIndex(index);
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted">Nu ai poze salvate în galerie.</p>
-            )}
-          </section>
-        )}
-
-        {activeTab === "calendar" && (
-          <UpcomingContestsCalendar contests={contests} />
-        )}
+          {activeTab === "calendar" && (
+            <UpcomingContestsCalendar contests={contests} />
+          )}
 
 
-        <Lightbox
-          open={open}
-          close={() => setOpen(false)}
-          index={index}
-          slides={matchResults.map((photo) => ({
-            src: `http://127.0.0.1:8000/uploads/${photo.image}`,
-          }))}
+          <Lightbox
+            open={open}
+            close={() => setOpen(false)}
+            index={index}
+            slides={matchResults.map((photo) => ({
+              src: `api/uploads/${photo.image}`,
+            }))}
 
-          render={{
-            slideFooter: () => (
-              <div className="lightbox-actions">
-                <button
-                  className="save-to-gallery"
-                  onClick={() => handleSave(matchResults[index])}
-                >
-                  💾 Salvează în galerie
-                </button>
-
-                <button
-                  className="add-to-favorite"
-                  onClick={() => handleAddToFavorites(matchResults[index].image)}
-                >
-                  🤍 Adaugă la favorite
-                </button>
-              </div>
-            )
-          }}
-        />
-        <Lightbox
-          open={galleryOpen}
-          close={() => setGalleryOpen(false)}
-          index={galleryIndex}
-          slides={galleryPhotos.map((imgPath) => ({
-            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
-          }))}
-          render={{
-            slideFooter: () => (
-              <div className="lightbox-actions">
-                <button
-                  className="add-to-favorite"
-                  onClick={() => handleAddToFavorites(galleryPhotos[galleryIndex])}
-                >
-                  🤍 Adaugă la favorite
-                </button>
-                <button
-                  className="remove-from-gallery"
-                  onClick={() => handleDeleteFromGallery(galleryPhotos[galleryIndex])}
-                >
-                  🗑️ Șterge din galerie
-                </button>
-
-              </div>
-            )
-          }}
-        />
+            render={{
+              slideFooter: () => (
+                <div className="lightbox-actions">
 
 
-        <Lightbox
-          open={favoriteOpen}
-          close={() => setFavoriteOpen(false)}
-          index={favoriteIndex}
-          slides={favoritePhotos.map((imgPath) => ({
-            src: `http://127.0.0.1:8000/uploads/${imgPath}`,
-          }))}
-          render={{
-            slideFooter: () => (
-              <div className="lightbox-actions">
-                <button
-                  className="remove-from-favorite"
-                  onClick={() => handleRemoveFromFavorites(favoritePhotos[favoriteIndex])}
-                >
-                  💔 Scoate din favorite
-                </button>
-              </div>
-            )
-          }}
-        />
-      </main>
-    </div>
+                </div>
+              )
+            }}
+          />
+          <Lightbox
+            open={galleryOpen}
+            close={() => setGalleryOpen(false)}
+            index={galleryIndex}
+            slides={galleryPhotos.map((imgPath) => ({
+              src: `api/uploads/${imgPath}`,
+            }))}
+            render={{
+              slideFooter: () => (
+                <div className="lightbox-actions">
+
+
+                </div>
+              )
+            }}
+          />
+
+
+          <Lightbox
+            open={favoriteOpen}
+            close={() => setFavoriteOpen(false)}
+            index={favoriteIndex}
+            slides={favoritePhotos.map((imgPath) => ({
+              src: `api/uploads/${imgPath}`,
+            }))}
+            render={{
+              slideFooter: () => (
+                <div className="lightbox-actions">
+                  <button
+                    className="remove-from-favorite"
+                    onClick={() => handleRemoveFromFavorites(favoritePhotos[favoriteIndex])}
+                  >
+                    💔 Scoate din favorite
+                  </button>
+                </div>
+              )
+            }}
+          />
+        </main>
+      </div>
+    </>
   );
 };
 
