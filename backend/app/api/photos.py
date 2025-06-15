@@ -87,7 +87,7 @@ def upload_photo(
 
     contest_name_clean = sanitize_filename(contest.name)
     album_title_clean = album_title.strip()
-    final_album_title = f"{current_user.full_name} - {album_title_clean}".strip()
+    final_album_title = f"{current_user.full_name}-{album_title_clean}".strip()
 
     album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name_clean, final_album_title)
     os.makedirs(album_folder_path, exist_ok=True)
@@ -140,7 +140,7 @@ def process_album(
 
     contest_name = sanitize_filename(contest.name)
     album_title_clean = album_title.strip()
-    final_album_title = f"{current_user.full_name} - {album_title_clean}".strip()
+    final_album_title = f"{current_user.full_name}-{album_title_clean}".strip()
     album_folder_path = os.path.join(UPLOAD_FOLDER, contest_name, final_album_title)
 
     if not os.path.exists(album_folder_path):
