@@ -202,7 +202,7 @@ const DashboardAlergator = () => {
     }
 
     try {
-      await axios.delete("api/remove-from-favorites", {
+      await axios.delete("/remove-from-favorites", {
         data: { image_path: imagePath },
         headers: { Authorization: `Bearer ${token}` }
       });
