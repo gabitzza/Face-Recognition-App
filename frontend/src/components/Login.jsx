@@ -13,11 +13,10 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://127.0.0.1:8000/auth/login", formData, {
+      const res = await axios.post("http://65.21.158.70:8000/auth/login", formData, {
         headers: { "Content-Type": "application/json" }
       });
 
-      
   
       const { access_token, user } = res.data;
   
