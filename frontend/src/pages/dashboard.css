@@ -100,7 +100,11 @@
   backdrop-filter: blur(16px);
   border: 1.5px solid rgba(120,180,255,0.13);
   margin: 0 auto;
-  height: 90%;
+  height: 60%;
+}
+
+.upload-message{
+    justify-self: center;
 }
 
 .custom-input{
