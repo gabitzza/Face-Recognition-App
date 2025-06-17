@@ -260,7 +260,7 @@ const HomePage = () => {
         <div className="stats-container">
           <div className="stats-intro">
             <h2>Fă-ți evenimentul<br />LIVE cu noi!</h2>
-            <p>Marathon Photos Live este lider mondial în fotografia sportivă de eveniment.</p>
+            <p>Match My Photo este lider mondial în fotografia sportivă de eveniment.</p>
             <button className="stats-btn">ORGANIZATORI<br />CONTACTAȚI-NE ACUM!</button>
           </div>
           <div className="stats-items">

@@ -110,19 +110,19 @@ const DashboardAdmin = () => {
               className={activeTab === "add-contest" ? "active" : ""}
               onClick={() => setActiveTab("add-contest")}
             >
-              ➕ Adaugă concursuri
+               Adaugă concursuri
             </li>
             <li
               className={activeTab === "existing-contests" ? "active" : ""}
               onClick={() => setActiveTab("existing-contests")}
             >
-              📅 Concursuri existente
+               Concursuri existente
             </li>
             <li
               className={activeTab === "approve-accounts" ? "active" : ""}
               onClick={() => setActiveTab("approve-accounts")}
             >
-              ✅ Aprobă conturi
+               Aprobă conturi
             </li>
             <li
               className="logout"

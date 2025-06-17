@@ -1,9 +1,17 @@
-from sqlalchemy import create_engine # type: ignore
-from sqlalchemy.ext.declarative import declarative_base # type: ignore
-from sqlalchemy.orm import sessionmaker # type: ignore
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-# URL pentru conexiune
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:gabriela9.@localhost/facerecognitiondb"
+# Verificăm dacă suntem în modul de test
+IS_TEST = os.getenv("TESTING") == "1"
+
+# Comutăm între baza reală și baza de test
+SQLALCHEMY_DATABASE_URL = (
+    "postgresql://postgres:gabriela9.@localhost/face_recognition_test"
+    if IS_TEST
+    else "postgresql://postgres:gabriela9.@localhost/facerecognitiondb"
+)
 
 # Creează engine-ul
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
