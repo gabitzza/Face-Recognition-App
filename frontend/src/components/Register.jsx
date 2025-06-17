@@ -76,9 +76,8 @@ function Register() {
           onChange={handleChange}
           style={{ marginBottom: "1.5rem" }}
         >
-          <option value="alergator">Alergător</option>
-          <option value="fotograf">Fotograf</option>
-          <option value="admin">Admin</option> 
+          <option value="alergator" style={{ color: "black" }}>Alergător</option>
+          <option value="fotograf" style={{ color: "black" }}>Fotograf</option>
         </select>
         <div style={{ marginBottom: "1.2rem", fontSize: "0.97rem" }}>
           <label style={{ color: "#b3e0ff" }}>

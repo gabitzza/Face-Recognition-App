@@ -72,11 +72,11 @@ const UpcomingContestsCalendar = ({ contests }) => {
           <div className="weekend-row" key={i}>
             <div className={`calendar-day ${saturday.contest ? "has-contest" : ""}`}>
               <div className="day-number">{saturday.day}</div>
-              {saturday.contest && <div className="contest-badge">🏁 {saturday.contest.name}</div>}
+              {saturday.contest && <div className="contest-badge"> {saturday.contest.name}</div>}
             </div>
             <div className={`calendar-day ${sunday?.contest ? "has-contest" : ""}`}>
               <div className="day-number">{sunday?.day || ""}</div>
-              {sunday?.contest && <div className="contest-badge">🏁 {sunday.contest.name}</div>}
+              {sunday?.contest && <div className="contest-badge"> {sunday.contest.name}</div>}
             </div>
           </div>
         );

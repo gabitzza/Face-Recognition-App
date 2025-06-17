@@ -294,7 +294,6 @@ const DashboardAlergator = () => {
               <li className={activeTab === "calendar" ? "active" : ""} onClick={() => setActiveTab("calendar")}>
                 <CalendarDays size={16} /> Concursuri viitoare
               </li>
-              <li className={activeTab === "gallery" ? "active" : ""} onClick={() => setActiveTab("gallery")}> <ImageIcon size={16} /> Galeria mea</li>
               <li className={activeTab === "favorites" ? "active" : ""} onClick={() => setActiveTab("favorites")}> <Heart size={16} /> Poze favorite</li>
               <li className="logout" onClick={handleLogout}>
                 <LogOut size={16} /> Logout
@@ -412,29 +411,6 @@ const DashboardAlergator = () => {
           )}
 
 
-          {activeTab === "gallery" && (
-            <section className="results">
-              <h2>Galeria mea</h2>
-              {galleryPhotos.length > 0 ? (
-                <div className="gallery">
-                  {galleryPhotos.map((imgPath, index) => (
-                    <img
-                      key={index}
-                      src={`api/uploads/${imgPath}`}
-                      alt="Poza salvată"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setGalleryOpen(true);
-                        setGalleryIndex(index);
-                      }}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted">Nu ai poze salvate în galerie.</p>
-              )}
-            </section>
-          )}
 
           {activeTab === "calendar" && (
             <UpcomingContestsCalendar contests={contests} />
