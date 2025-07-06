@@ -18,7 +18,7 @@ const DashboardAdmin = () => {
   const [activeTab, setActiveTab] = useState("add-contest");
 
   useEffect(() => {
-    axios.get("api/contests")
+    axios.get("/contests")
       .then(res => setContests(res.data))
       .catch(err => console.error("Eroare la preluare concursuri:", err));
   }, []);
