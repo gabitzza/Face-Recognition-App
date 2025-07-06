@@ -8,7 +8,7 @@ const ContestPage = () => {
   const [contest, setContest] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/contest-by-slug/${slug}`)
+    axios.get(`/contest-by-slug/${slug}`)
       .then(res => setContest(res.data))
       .catch(() => setContest(null));
   }, [slug]);

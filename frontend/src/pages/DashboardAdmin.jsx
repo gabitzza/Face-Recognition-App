@@ -52,7 +52,7 @@ const DashboardAdmin = () => {
     formData.append("url", slug);
     if (imageFile) {
       formData.append("image", imageFile);
-    }
+    } 
 
     try {
       await axios.post("api/contests", formData, {
@@ -160,15 +160,6 @@ const DashboardAdmin = () => {
                 onChange={(e) => setDate(e.target.value)}
               />
 
-              <div style={{ marginTop: "1rem" }}>
-                <label>URL site oficial:</label><br />
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://exemplu.ro"
-                />
-              </div>
 
               <label>Imagine afiș:</label>
               <div className="custom-file-input">
