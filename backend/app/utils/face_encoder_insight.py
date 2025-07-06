@@ -4,7 +4,7 @@ import cv2
 
 # Inițializăm o singură instanță (face detecție + embeddings ArcFace)
 app = FaceAnalysis(name="buffalo_l")
-app.prepare(ctx_id=0)  # 0 = GPU, -1 = CPU
+app.prepare(ctx_id=0) # 0 = GPU, -1 = CPU
 
 def encode_image_insightface(image_path):
     """

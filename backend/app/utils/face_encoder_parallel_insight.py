@@ -12,7 +12,6 @@ from app.models.photos import Photo
 def save_thumbnail(original_path, size=(600, 400)):
     from PIL import Image
     import os
-    print(f"Se foloseste face_encoder_parallel_insight.py")
     img = Image.open(original_path).convert("RGB")
     img.thumbnail(size, Image.Resampling.LANCZOS)
 
