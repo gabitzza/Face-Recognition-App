@@ -48,8 +48,10 @@ const DashboardAdmin = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("date", date);
-    formData.append("url", customUrl.trim().toLowerCase());
-    console.log("Trimitem URL:", customUrl.trim().toLowerCase());
+    const cleanSlug = customUrl.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/[^a-z0-9\-]/g, '');
+    formData.append("url", cleanSlug);
+
+    console.log("Trimitem URL:", cleanSlug);
     if (imageFile) {
       formData.append("image", imageFile);
     }

@@ -86,7 +86,7 @@ async def match_photo(
         for filename, face_list in all_data.items():
             for known_face in face_list:
                 similarity = cosine_similarity(runner_encoding, known_face)
-                if similarity > 0.5:
+                if similarity > 0.4:
                     matched_photos.append({
                     "image": f"{contest_name}/{album_name}/{filename}",
                     "thumb": f"{contest_name}/thumbs/{album_name}/{filename}"
