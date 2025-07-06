@@ -48,7 +48,8 @@ const DashboardAdmin = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("date", date);
-    formData.append("url", url);
+    const slug = name.toLowerCase().replace(/\s+/g, "");
+    formData.append("url", slug);
     if (imageFile) {
       formData.append("image", imageFile);
     }

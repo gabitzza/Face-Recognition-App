@@ -4,6 +4,8 @@ from app.schemas import contest as schemas
 from app.models import contests as models
 from app.core.database import get_db
 from fastapi import HTTPException
+from app.models.contests import Contest
+
 
 router = APIRouter()
 
@@ -94,3 +96,10 @@ def update_contest(
     db.commit()
     db.refresh(contest)
     return contest
+
+@router.get("/contest-by-slug/{slug}")
+def get_contest_by_slug(slug: str, db: Session = Depends(get_db)):
+    contest = db.query(Contest).filter(Contest.url == slug).first()
+    if not contest:
+        raise HTTPException(status_code=404, detail="Concurs inexistent")
+    return contest  

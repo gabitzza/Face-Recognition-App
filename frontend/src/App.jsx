@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import GalerieFotograf from "./pages/GalerieFotograf";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import HomePage from './pages/HomePage';
+import ContestPage from "./pages/ContestPage";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import './assets/fonts/fonts.css';
 
@@ -18,6 +19,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/politica-confidentialitate" element={<PrivacyPolicy />} />
+      <Route path="/:slug" element={<ContestPage />} />
 
       {/* 🔒 Protejăm dashboard-urile */}
       <Route
