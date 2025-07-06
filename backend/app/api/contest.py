@@ -32,6 +32,7 @@ def create_contest(
             shutil.copyfileobj(image.file, buffer)
         image_path = f"uploads/contests/{filename}" 
 
+    print("📩 URL primit de backend:", url)
     db_contest = models.Contest(
     name=name,
     date=date,
