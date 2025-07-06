@@ -55,7 +55,7 @@ const DashboardAdmin = () => {
     } 
 
     try {
-      await axios.post("api/contests", formData, {
+      await axios.post("/contests", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -66,7 +66,7 @@ const DashboardAdmin = () => {
       setDate("");
       setImageFile(null);
 
-      const refreshed = await axios.get("api/contests");
+      const refreshed = await axios.get("/contests");
       setContests(refreshed.data);
     } catch (error) {
       console.error("Eroare la adăugare:", error);
@@ -227,11 +227,11 @@ const DashboardAdmin = () => {
                             }
 
                             try {
-                              await axios.put(`api/contests/${contest.id}`, formData, {
+                              await axios.put(`/contests/${contest.id}`, formData, {
                                 headers: { "Content-Type": "multipart/form-data" },
                               });
 
-                              const refreshed = await axios.get("api/contests");
+                              const refreshed = await axios.get("/contests");
                               setContests(refreshed.data);
                               setEditingId(null);
                               setUpdatedName("");
@@ -268,7 +268,7 @@ const DashboardAdmin = () => {
                           onClick={async () => {
                             if (window.confirm("Ești sigur că vrei să ștergi acest concurs?")) {
                               try {
-                                await axios.delete(`api/contests/${contest.id}`);
+                                await axios.delete(`/contests/${contest.id}`);
                                 setContests(contests.filter(c => c.id !== contest.id));
                               } catch (err) {
                                 alert("Eroare la ștergerea concursului.");
