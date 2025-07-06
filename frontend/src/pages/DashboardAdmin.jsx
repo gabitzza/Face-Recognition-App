@@ -13,7 +13,6 @@ const DashboardAdmin = () => {
   const [updatedName, setUpdatedName] = useState("");
   const [updatedDate, setUpdatedDate] = useState("");
   const [newImage, setNewImage] = useState(null);
-  const [url, setUrl] = useState("");
   const [updatedUrl, setUpdatedUrl] = useState("");
   const [pending, setPending] = useState([]);
   const [activeTab, setActiveTab] = useState("add-contest");
@@ -50,6 +49,8 @@ const DashboardAdmin = () => {
     formData.append("date", date);
     const slug = name.toLowerCase().replace(/\s+/g, "");
     formData.append("url", slug);
+    console.log("Trimitem URL:", slug);
+
     if (imageFile) {
       formData.append("image", imageFile);
     } 
