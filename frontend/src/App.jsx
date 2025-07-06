@@ -9,11 +9,13 @@ import GalerieFotograf from "./pages/GalerieFotograf";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import HomePage from './pages/HomePage';
 import ContestPage from "./pages/ContestPage";
+import { BrowserRouter } from "react-router-dom";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import './assets/fonts/fonts.css';
 
 function App() {
   return (
+    <BrowserRouter>
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<Login />} />
@@ -50,6 +52,7 @@ function App() {
       />
 
     </Routes>
+    </BrowserRouter>
   );
 }
 
